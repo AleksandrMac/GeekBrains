@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Task5</title>
+</head>
+<body>
+<!--
+Реализовать четыре основные арифметические операции в виде функций с двумя параметрами.
+Обязательно использовать оператор return.
+-->
+<script>
+    function sum(a,b){
+        return parseInt(a) + parseInt(b);
+    }
+    function raznost(a,b){
+        return parseInt(a) - parseInt(b);
+    }
+    function proizvedenie(a,b){
+        return parseInt(a) * parseInt(b);
+    }
+    function delenie(a,b){
+        if(b === 0) {
+            console.log("Делитель не может равняться 0");
+            return undefined;
+        }
+        else return parseInt(a) / parseInt(b);
+    }
+</script>
+
+</body>
+</html>
