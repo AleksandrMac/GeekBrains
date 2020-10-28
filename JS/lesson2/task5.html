@@ -43,6 +43,14 @@
             default: return undefined;
         }
     }
+    function power(val, pow) {
+        const v = parseInt(val);
+        const p = parseInt(pow);
+        if(p < 0) {console.log("please, input pow > 0"); return undefined;}
+        if(p === 0) return 1;
+        if(p === 1) return v;
+        return v * power(v,p - 1);
+    }
 </script>
 
 </body>
