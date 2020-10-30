@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Task5</title>
+</head>
+<body>
+<!--
+Реализовать четыре основные арифметические операции в виде функций с двумя параметрами.
+Обязательно использовать оператор return.
+-->
+<script>
+                                    //интересный результат сравнения получается благодоря тому, что операция равенства и сравнения работают по разному
+    console.log(null === 0);    //false - здесь
+    console.log(null == 0);     //false - и здесь, происходит обычное сравнение и логично предположить что null ни как не может быть равен 0
+    console.log(null > 0);      //false  - в остальных вариантах, в операциях сравнения null преобразуется в 0, и тогда логика встает на свои места
+    console.log(null < 0);      //false
+    console.log(null >= 0);      //true
+    console.log(null <= 0);      //true
+
+    function sum(a,b){
+        return parseInt(a) + parseInt(b);
+    }
+    function raznost(a,b){
+        return parseInt(a) - parseInt(b);
+    }
+    function proizvedenie(a,b){
+        return parseInt(a) * parseInt(b);
+    }
+    function delenie(a,b){
+        if(b === 0) {
+            console.log("Делитель не может равняться 0");
+            return undefined;
+        }
+        else return parseInt(a) / parseInt(b);
+    }
+    function mathOperation(arg1, arg2, operation){
+        switch (operation) {
+            case '+': sum(a,b); break;
+            case '-': raznost(a,b); break;
+            case '*': proizvedenie(a,b); break;
+            case '/': delenie(a,b); break;
+            default: return undefined;
+        }
+    }
+    function power(val, pow) {
+        const v = parseInt(val);
+        const p = parseInt(pow);
+        if(p < 0) {console.log("please, input pow > 0"); return undefined;}
+        if(p === 0) return 1;
+        if(p === 1) return v;
+        return v * power(v,p - 1);
+    }
+</script>
+
+</body>
+</html>
