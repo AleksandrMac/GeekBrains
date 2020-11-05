@@ -1,0 +1,28 @@
+<!DOCTY`PE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Task1</title>
+</head>
+<body>
+<script>
+    console.log(integerToObject(245));
+
+    function integerToObject(number, obj = {}) {
+        const digitNumber = ['единицы', 'десятки', 'сотни'];
+        let num = parseInt(number);
+        if ((num > 999 || num < 0) && Object.keys(obj).length === 0) {
+            console.log("Необходимо ввести число в интервале [0, 999]");
+            return obj;
+        }
+        if(number < 10){
+            obj[digitNumber[Object.keys(obj).length]] = number;
+            return obj;
+        }
+        obj[digitNumber[Object.keys(obj).length]] = number%10;
+        integerToObject((number/10) | 0,obj);
+        return obj
+    }
+</script>
+</body>
+</html>`
