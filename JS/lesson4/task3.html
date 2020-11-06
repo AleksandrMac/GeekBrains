@@ -6,21 +6,52 @@
 </head>
 <body>
 <script>
-    const basket = [
-        [1, 'apple', 10.5, 3],                      //10.5 * 3 = 31.5
-        [2, 'orange', 11, 5],                       //11 * 5 = 55
-        [3, 'peach', 20.75, 1],                     //20.75 * 1 = 20.75
-        [4, 'ananas', 10, 4]                        //10 * 4 = 40
-    ];                                               //summ = 147.25
-    console.log(`priceForAll = ${countBasketPrice(basket)}`);
-    function countBasketPrice(basket){
-        let pricePerAll = 0.;
-        for(let i = 0; i < basket.length; i++){
-            const [id, name, pricePerOne, count] = basket[i];
-            pricePerAll += pricePerOne * count;
+
+    const product = {
+        id: null,
+        name: null,
+        description: null,
+        price: null
+    };
+    const basketPosition = {
+        count: null,
+        product: product,
+        getPriceTotal() {
+            return this.count * this.product.price;
+        },
+        setProduct(id, name, price) {
+            this.product = {...product};
+            this.product.id = id;
+            this.product.name = name;
+            this.product.price = price;
         }
-        return pricePerAll;
+    };
+
+    const basket = {
+        positionList: [],
+        getPrice() {
+            let priceTotal = 0;
+            for(let i = 0; i < this.positionList.length; i++)
+                priceTotal += this.positionList[i].getPriceTotal();
+            return priceTotal;
+        },
+        addPosition(id, name, price, count) {
+            let position = {...basketPosition};
+            position.setProduct(id, name, parseFloat(price));
+            position.count = parseInt(count);
+            this.positionList.push(position);
+        }
     }
+
+    let basketT = basket;
+    basketT.addPosition(1, 'apple', 10.5, 3);
+    basketT.addPosition(2, 'orange', 11, 5);
+    basketT.addPosition(3, 'peach', 20.75, 1);
+    basketT.addPosition(4, 'ananas', 10, 4);
+
+    console.log(basketT);
+    console.log(`priceForAll = ${basketT.getPrice()}`);
+
 </script>
 </body>
 </html>
