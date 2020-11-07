@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>task2</title>
+</head>
+<body>
+<script>
+    const basket = [
+        [1, 'apple', 10.5, 3],                      //10.5 * 3 = 31.5
+        [2, 'orange', 11, 5],                       //11 * 5 = 55
+        [3, 'peach', 20.75, 1],                     //20.75 * 1 = 20.75
+        [4, 'ananas', 10, 4]                        //10 * 4 = 40
+    ];                                               //summ = 147.25
+    console.log(`priceForAll = ${countBasketPrice(basket)}`);
+    function countBasketPrice(basket){
+        let pricePerAll = 0.;
+        for(let i = 0; i < basket.length; i++){
+            const [id, name, pricePerOne, count] = basket[i];
+            pricePerAll += pricePerOne * count;
+        }
+        return pricePerAll;
+    }
+</script>
+</body>
+</html>
