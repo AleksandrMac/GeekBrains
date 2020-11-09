@@ -6,9 +6,10 @@
 </head>
 <body>
 <script>
-    console.log(integerToObject(245));
+    console.log(integerToObjectRecursive(245));
+    console.log(integerToObjectFor(250));
 
-    function integerToObject(number, obj = {}) {
+    function integerToObjectRecursive(number, obj = {}) {
         const digitNumber = ['единицы', 'десятки', 'сотни'];
         let num = parseInt(number);
         if ((num > 999 || num < 0) && Object.keys(obj).length === 0) {
@@ -20,9 +21,17 @@
             return obj;
         }
         obj[digitNumber[Object.keys(obj).length]] = number%10;
-        integerToObject((number/10) | 0,obj);
+        integerToObjectRecursive((number/10) | 0,obj);
         return obj
+    }
+    function integerToObjectFor(number, obj = {}) {
+        const digitNumber = ['единицы', 'десятки', 'сотни'];
+        if ((number > 999 || number < 0) && Object.keys(obj).length === 0)
+            console.log("Необходимо ввести число в интервале [0, 999]");
+        else
+            for(let i = 0, num = number; num > 0; num = Math.floor(num/10), i++)    obj[digitNumber[i]] = num%10;
+        return obj;
     }
 </script>
 </body>
-</html>`
+</html>
