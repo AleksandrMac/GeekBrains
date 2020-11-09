@@ -29,5 +29,42 @@ function createChessBoard() {
         table.appendChild(tr);
     }
 }
+function arrangeFigures() {
+    const tr = document.getElementById("chess").querySelectorAll('tr');
 
-window.onload = createChessBoard;
+    for(let i = 0; i <=8; i++){
+        for(let j = 0; j <=8; j++){
+            if(i === 1 || i == 8) {
+                const tdAll = tr[`${i}`].querySelectorAll('td');
+                if(j > 0){
+                    let color;
+                    if(i === 1) color = 'blue';
+                    else color = 'cyan';
+                    //const td = tdAll[`${j}`];
+                    tdAll[`${j-1}`].innerText = 'Т';    tdAll[`${j-1}`].style.color = color; j++;
+                    tdAll[`${j-1}`].innerText = 'К';    tdAll[`${j-1}`].style.color = color; j++;
+                    tdAll[`${j-1}`].innerText = 'Л';    tdAll[`${j-1}`].style.color = color; j++;
+                    tdAll[`${j-1}`].innerText = 'КК';   tdAll[`${j-1}`].style.color = color; j++;
+                    tdAll[`${j-1}`].innerText = 'Ф';    tdAll[`${j-1}`].style.color = color; j++;
+                    tdAll[`${j-1}`].innerText = 'Л';    tdAll[`${j-1}`].style.color = color; j++;
+                    tdAll[`${j-1}`].innerText = 'К';    tdAll[`${j-1}`].style.color = color; j++;
+                    tdAll[`${j-1}`].innerText = 'Т';    tdAll[`${j-1}`].style.color = color; j++;
+                }
+            } else if(i === 2 || i == 7) {
+                const tdAll = tr[`${i}`].querySelectorAll('td');
+                let color;
+                if (j > 0) {
+                    if (i === 2) color = 'blue';
+                    else color = 'cyan';
+                    tdAll[`${j - 1}`].innerText = 'П'; tdAll[`${j-1}`].style.color = color;
+                }
+            }
+        }
+    }
+}
+function chessInit() {
+    createChessBoard();
+    arrangeFigures();
+}
+
+window.onload = chessInit;
