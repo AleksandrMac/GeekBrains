@@ -88,7 +88,7 @@ const catalogPosition = {
     },
     getHTML() {
         return `<div class = "catalogItem">
-                    <div style="background-image = url(${this.product.imageUrl})"></div>
+                    <div style="background-image: url(${this.product.imageUrl})"></div>
                     <div>${this.product.name}</div>
                     <div>${this.product.description}</div>
                     <div>${this.product.price}</div>
