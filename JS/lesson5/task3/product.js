@@ -23,20 +23,12 @@ const basketPosition = {
         this.product.price = price;
     },
     getHTML() {
-        const div = document.createElement('div');
-        const name = document.createElement('div');         name.style.display = 'inline-block';          name.style.width = '150px';
-        const price = document.createElement('div');        price.style.display = 'inline-block';         price.style.width = '50px';         price.style.textAlign = 'center';
-        const count = document.createElement('div');        count.style.display = 'inline-block';         count.style.width = '50px';         count.style.textAlign = 'center';
-        const totalPrice = document.createElement('div');   totalPrice.style.display = 'inline-block';    totalPrice.style.width = '50px';    totalPrice.style.textAlign = 'center';
-        name.innerText = this.product.name;
-        price.innerText = this.product.price;
-        count.innerText = this.count;
-        totalPrice.innerText = this.getPriceTotal();
-        div.appendChild(name);
-        div.appendChild(price);
-        div.appendChild(count);
-        div.appendChild(totalPrice);
-        return div;
+        return `<div class = "basketItem">
+                    <div>${this.product.name}</div>
+                    <div>${this.product.price}</div>
+                    <div>${this.count}</div>
+                    <div>${this.getPriceTotal()}</div>
+                </div>`;
     }
 };
 
@@ -55,49 +47,32 @@ const basket = {
         this.positionList.push(position);
     },
     getHeaderHTML() {
-        const div = document.createElement('div');
-        const name = document.createElement('div');         name.style.display = 'inline-block';          name.style.width = '150px';
-        const price = document.createElement('div');        price.style.display = 'inline-block';         price.style.width = '50px';         price.style.textAlign = 'center';
-        const count = document.createElement('div');        count.style.display = 'inline-block';         count.style.width = '50px';         count.style.textAlign = 'center';
-        const totalPrice = document.createElement('div');   totalPrice.style.display = 'inline-block';    totalPrice.style.width = '50px';    totalPrice.style.textAlign = 'center';
-        name.innerText = 'Наименование';
-        price.innerText = 'Цена';
-        count.innerText = 'Кол.';
-        totalPrice.innerText = 'Всего';
-        div.appendChild(name);
-        div.appendChild(price);
-        div.appendChild(count);
-        div.appendChild(totalPrice);
-        return div;
+        return `<div class="basketItem">
+                    <div>Наименование</div>
+                    <div>Цена</div>
+                    <div>Кол.</div>
+                    <div>Всего</div>
+                </div>`;
     },
     getEmptyHTML() {
-        const div = document.createElement('div');
-        const empty = document.createElement('div');    empty.style.textAlign = 'center';
-        empty.innerText = 'Корзина пуста!';
-        return div.appendChild(empty);
+        return `<div style="text-align : center">Корзина пуста!</div>`;
     },
     getTotalHTML() {
-        const div = document.createElement('div');          div.style.backgroundColor = '#ddd';
-        const name = document.createElement('div');         name.style.display = 'inline-block';          name.style.width = '250px ';
-        const totalPrice = document.createElement('div');   totalPrice.style.display = 'inline-block';    totalPrice.style.width = '50px';    totalPrice.style.textAlign = 'center';
-        name.innerText = 'Всего';
-        totalPrice.innerText = String(this.getPrice());
-        div.appendChild(name);
-        div.appendChild(totalPrice);
-        return div;
+        return `<div style="background: #ddd">
+                    <div style="display : inline-block; width : 250px">Всего</div>
+                    <div style="display : inline-block; width : 50px; text-align : center">${String(this.getPrice())}</div>
+                </div>`;
     },
     setHTML(tagID) {
         const element = document.getElementById(tagID);
-        element.style.width = settings.width;
-        element.style.backgroundColor = settings.backgroundColor;
         if( this.positionList.length === 0 ){
-            element.appendChild(this.getEmptyHTML());
+            element.insertAdjacentHTML("beforeend", this.getEmptyHTML());
         }else {
-            element.appendChild(this.getHeaderHTML());
+            element.insertAdjacentHTML("beforeend", this.getHeaderHTML());
             for(let i = 0; i < this.positionList.length; i++){
-                element.appendChild(this.positionList[i].getHTML());
+                element.insertAdjacentHTML("beforeend", this.positionList[i].getHTML());
             }
-            element.appendChild(this.getTotalHTML());
+            element.insertAdjacentHTML("beforeend", this.getTotalHTML());
         }
     }
 }
@@ -112,19 +87,12 @@ const catalogPosition = {
         this.product.imageUrl = imageUrl;
     },
     getHTML() {
-        const div = document.createElement('div');  div.style.display = 'inline-block';          div.style.width = '150px'; div.style.margin = '30px';  div.style.textAlign = 'center';
-        const image = document.createElement('div'); image.style.height = '150px';    image.style.width = '150px'; image.style.backgroundImage = `url(${this.product.imageUrl})`; image.style.backgroundColor = '#ddd'
-        const name = document.createElement('div');
-        const description = document.createElement('div');
-        const price = document.createElement('div');
-        name.innerText = this.product.name;
-        description.innerText = this.product.description;
-        price.innerText = this.product.price;
-        div.appendChild(image);
-        div.appendChild(name);
-        div.appendChild(description);
-        div.appendChild(price);
-        return div;
+        return `<div class = "catalogItem">
+                    <div style="background-image = url(${this.product.imageUrl})"></div>
+                    <div>${this.product.name}</div>
+                    <div>${this.product.description}</div>
+                    <div>${this.product.price}</div>
+                </div>`;
     }
 }
 const catalog = {
@@ -142,7 +110,7 @@ const catalog = {
     setHTML(tagID) {
         const element = document.getElementById(tagID);
         for(let i = 0; i < this.productList.length; i++){
-            element.appendChild(this.productList[i].getHTML());
+            element.insertAdjacentHTML("beforeend", this.productList[i].getHTML());
         }
     }
 }
@@ -161,6 +129,3 @@ catalogT.addPosition(3, 'peach', 20.75, 'какое то описание дан
 catalogT.addPosition(4, 'ananas', 10, 'какое то описание данного товара', '123.jpg');
 
 catalog.setHTML('productCatalog');
-
-// console.log(basketT);
-// console.log(`priceForAll = ${basketT.getPrice()}`);

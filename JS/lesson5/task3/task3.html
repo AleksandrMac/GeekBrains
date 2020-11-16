@@ -3,6 +3,35 @@
 <head>
     <meta charset="UTF-8">
     <title>Task3</title>
+    <style>
+        #productBasket {
+            display: inline-block;
+            width: 350px;
+        }
+        .basketItem {
+            display: block;
+        }
+        .basketItem > div {
+            display: inline-block;
+            width: 50px;
+        }
+        .basketItem > div:nth-child(1) {
+            display: inline-block;
+            width: 150px;
+        }
+        .catalogItem {
+            display: inline-block;
+            width: 150px;
+            margin: 30px;
+        }
+        .catalogItem > div {
+            text-align: center;
+        }
+        .catalogItem > div:first-child {
+            height: 150px;
+            background-color: #ddd;
+        }
+    </style>
 </head>
 <body>
 <div id="productBasket"></div>
