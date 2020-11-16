@@ -9,7 +9,8 @@ const product = {
     name: null,
     description: null,
     price: null,
-    imageUrl: 0,
+    imageUrl: [],
+    mainImageID: 0,
 };
 const basketPosition = {
     id: null,
@@ -99,17 +100,18 @@ const basket = {
 }
 const catalogPosition = {
     product: product,
-    setProduct(id, name, price, description, imageUrl) {
+    setProduct(id, name, price, description, imageUrl, mainImageID = 0) {
         this.product = {...product};
         this.product.id = id;
         this.product.name = name;
         this.product.price = price;
         this.product.description = description;
         this.product.imageUrl = imageUrl;
+        this.product.mainImageID = mainImageID;
     },
     getHTML() {
         return `<div class = "catalogItem">
-                    <div style="background-image: url(${this.product.imageUrl})"></div>
+                    <div data-image = "${this.product.id}" style="background-image: url(${String(this.product.imageUrl[0].url).replace('%size%','_min')})"></div>
                     <div>${this.product.name}</div>
                     <div>${this.product.description}</div>
                     <div>Цена: ${this.product.price}</div>
@@ -119,8 +121,9 @@ const catalogPosition = {
 }
 const catalog = {
     catalogElement: document.getElementById('productCatalog'),
+    sliderElement: null,
+    sliderCurrID: null,
     productList: [],
-    image: null,
 
     addPosition(id, name, price, description, imageUrl) {
         let position = {...catalogPosition};
@@ -129,16 +132,42 @@ const catalog = {
         position.name = name;
         position.price = price;
         position.description = description;
+        position.imageUrl = imageUrl;
         this.productList.push(position);
     },
     cellClickHandler(event){        
-        if (!this.isCorrectClick(event)) return;
-        //console.log(event.dataset);
-        //basket.addPosition(event.dataset.buy);
-        basket.basketElement.dispatchEvent(new CustomEvent('buy-click', {detail: 
-            {id: event.target.dataset.buy},
-            bubbles: true,
-        }));
+        if (this.isClickByBuyButton(event)){
+            basket.basketElement.dispatchEvent(new CustomEvent('buy-click', {detail: 
+                {id: event.target.dataset.buy},
+                bubbles: true,
+            }));
+            return;
+        }
+        if (this.isClickByImage(event)){
+            this.openSlider(event.target.dataset.image);
+            return;
+        }
+        if (this.isClickByPreviousImage(event)){
+            this.previousSlider();
+            return;
+        }
+        if (this.isClickByNextImage(event)){
+            this.nextSlider();
+            return;
+        }
+        if (this.isClickByCloseImage(event)){
+            this.closeSlider();
+            return;
+        }
+    },
+    createSlider(productID) {
+        return `
+            <div class="slider">
+                <image id="slider">
+                <div class="slider_prev"></div>
+                <div class="slider_next"></div>
+                <div class="close"></div>
+            </div>`;
     },
     init() {
         this.setProductList();
@@ -148,46 +177,130 @@ const catalog = {
     initEventHandler() {
         this.catalogElement.addEventListener('click', event => this.cellClickHandler(event));
     },
-    isClickByCell(event)  {
+    isClickByBuyButton(event)  {
         return event.target.dataset.buy !== undefined ;
+    },
+    isClickByImage(event)  {
+        return event.target.dataset.image !== undefined ;
+    },
+    isClickByCloseImage(event)  {
+        if(event.target.classList[0] === 'close')
+            this.closeSlider();
+    },
+    isClickByPreviousImage(event)  {
+        if(event.target.classList[0] === 'slider_prev')
+            this.setPreviousImageForSlider();
+    },
+    isClickByNextImage(event)  {
+        if(event.target.classList[0] === 'slider_next')
+            this.setNextImageForSlider();
     },
     isCorrectClick(event) {
         return this.isClickByCell(event);
+    },
+    getImageUrlByID(productID,imgID) {
+        for (const val of this.productList) 
+            if (val.id === +productID) return String(val.imageUrl[imgID].url).replace('%size%','_max');
+        return '';
     },
     getProductByID(productID) {
         for (const val of this.productList) 
             if (val.id === +productID) return val;
         return null;
     },
+    openSlider(productID) {
+        const element = document.getElementsByTagName('html')[0];
+        element.insertAdjacentHTML("beforeend", this.createSlider(productID));
+        this.sliderElement = document.getElementsByClassName('slider')[0];
+        this.sliderElement.addEventListener('click', event => this.cellClickHandler(event));
+        this.setImageUrlForSlider(productID, 0);
+    },
+    closeSlider() {
+        const element = document.getElementsByClassName('slider')[0];
+        element.remove();
+        this.sliderElement = null;
+        this.sliderCurrID = null;
+    },
     render(tagID) {
-        //const element = document.getElementById(tagID);
         for(let i = 0; i < this.productList.length; i++){
             this.catalogElement.insertAdjacentHTML("beforeend", this.productList[i].getHTML());
         }
+    },    
+    setPreviousImageForSlider() {
+        for(const val of this.productList)
+            if(val.productID = this.sliderCurrID.productID){
+                const len = val.imageUrl.length;
+                if(len === 1) this.setImageUrlForSlider(this.sliderCurrID.productID, this.sliderCurrID.imgID);
+                else if(len > 1 && this.sliderCurrID.imgID === 0){
+                    this.setImageUrlForSlider(this.sliderCurrID.productID, len-1);
+                } else this.setImageUrlForSlider(this.sliderCurrID.productID, this.sliderCurrID.imgID - 1);
+                
+            }
+    },
+    setNextImageForSlider() {
+        for(const val of this.productList)
+            if(val.productID = this.sliderCurrID.productID){
+                const len = val.imageUrl.length;
+                if(len === 1) this.setImageUrlForSlider(this.sliderCurrID.productID, this.sliderCurrID.imgID);
+                else if(len > 1 && this.sliderCurrID.imgID === len - 1){
+                    this.setImageUrlForSlider(this.sliderCurrID.productID, 0);
+                } else this.setImageUrlForSlider(this.sliderCurrID.productID, this.sliderCurrID.imgID + 1);
+                
+            }
+    },
+    setImageUrlForSlider(productID, imgID) {
+        const element = document.getElementById("slider");
+        element.setAttribute("src", this.getImageUrlByID(productID,imgID));
+        this.sliderCurrID = {productID: productID, imgID: imgID};
     },
     setProductList() {
         const test = [
-            {id: 1, name: 'apple', price: 10.5, description: 'какое то описание данного товара', imageUrl: '123.jpg'},
-            {id: 2, name: 'orange', price: 11, description: 'какое то описание данного товара', imageUrl: '123.jpg'},
-            {id: 3, name: 'peach', price: 20.75, description: 'какое то описание данного товара', imageUrl: '123.jpg'},
-            {id: 4, name: 'ananas', price: 10, description: 'какое то описание данного товара', imageUrl: '123.jpg'}
+            {
+                id: 1, name: 'apple', 
+                price: 10.5, 
+                description: 'какое то описание данного товара', 
+                imageUrl: [
+                    {url: 'img/green_apple%size%.jpg'},
+                    {url: 'img/apple1%size%.jpg'},
+                    {url: 'img/apple2%size%.jpg'}
+                ],
+                mainImageID: 0
+            },{
+                id: 2, 
+                name: 'orange', 
+                price: 11, 
+                description: 'какое то описание данного товара', 
+                imageUrl: [
+                    {url: 'img/green_apple%size%.jpg'},
+                    {url: 'img/apple1%size%.jpg'},
+                    {url: 'img/apple2%size%.jpg'}
+                ], 
+                mainImageID: 0
+            },{
+                id: 3, 
+                name: 'peach', 
+                price: 20.75, 
+                description: 'какое то описание данного товара', 
+                imageUrl: [
+                    {url: 'img/green_apple%size%.jpg'},
+                    {url: 'img/apple1%size%.jpg'},
+                    {url: 'img/apple2%size%.jpg'}
+                ],
+                mainImageID: 0
+            },{
+                id: 4, name: 'ananas', 
+                price: 10, 
+                description: 'какое то описание данного товара', 
+                imageUrl: [
+                    {url: 'img/green_apple%size%.jpg'},
+                    {url: 'img/apple1%size%.jpg'},
+                    {url: 'img/apple2%size%.jpg'}
+                ], 
+                mainImageID: 0
+            }
         ];
-        for (const val of test) this.addPosition(val.id, val.name, val.price, val.description, val.imageUrl);
+        for (const val of test) this.addPosition(val.id, val.name, val.price, val.description, val.imageUrl, val.mainImageID);
     }
 }
-/*const basketT = basket;
-basketT.addPosition(1, 'apple', 10.5, 3);
-basketT.addPosition(2, 'orange', 11, 5);
-basketT.addPosition(3, 'peach', 20.75, 1);
-basketT.addPosition(4, 'ananas', 10, 4);*/
-
 basket.init();
 catalog.init();
-
-/*const catalogT = catalog;
-catalogT.addPosition(1, 'apple', 10.5, 'какое то описание данного товара', '123.jpg');
-catalogT.addPosition(2, 'orange', 11, 'какое то описание данного товара', '123.jpg');
-catalogT.addPosition(3, 'peach', 20.75, 'какое то описание данного товара', '123.jpg');
-catalogT.addPosition(4, 'ananas', 10, 'какое то описание данного товара', '123.jpg');
-
-catalog.init('productCatalog');*/
