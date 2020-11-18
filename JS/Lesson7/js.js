@@ -164,17 +164,21 @@ const snake = {
     },
 
     getNextStepHeadPoint() {
-        const firstPoint = this.body[0];
+        let firstPoint = this.body[0];
+        /*if(firstPoint.x === 0) firstPoint.x = settings.colsCount;
+        if(firstPoint.x === settings.colsCount) firstPoint.x = 0;
+        if(firstPoint.y === 0) firstPoint.x = settings.rowsCount;
+        if(firstPoint.y === settings.rowsCount) firstPoint.x = 0;*/
 
         switch (this.direction) {
             case 'up':
-                return {x: firstPoint.x, y: firstPoint.y - 1};
+                return {x: firstPoint.x, y: (firstPoint.y + settings.rowsCount - 1) % settings.rowsCount};
             case 'right':
-                return {x: firstPoint.x + 1, y: firstPoint.y};
+                return {x: (firstPoint.x + 1) % settings.colsCount, y: firstPoint.y};
             case 'down':
-                return {x: firstPoint.x, y: firstPoint.y + 1};
+                return {x: firstPoint.x, y: (firstPoint.y + 1) % settings.rowsCount};
             case 'left':
-                return {x: firstPoint.x - 1, y: firstPoint.y};
+                return {x: (firstPoint.x + settings.rowsCount - 1) % settings.colsCount, y: firstPoint.y};
         }
     },
 
@@ -333,10 +337,10 @@ const game = {
         const nextHeadPoint = this.snake.getNextStepHeadPoint();
 
         return !this.snake.isOnPoint(nextHeadPoint)
-            && nextHeadPoint.x < this.config.getColsCount()
+            /*&& nextHeadPoint.x < this.config.getColsCount()
             && nextHeadPoint.y < this.config.getRowsCount()
             && nextHeadPoint.x >= 0
-            && nextHeadPoint.y >= 0
+            && nextHeadPoint.y >= 0*/
             && !(nextHeadPoint.x === this.barrier.getCoordinates().x
             && nextHeadPoint.y === this.barrier.getCoordinates().y);
     },
