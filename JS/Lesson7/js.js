@@ -90,7 +90,7 @@ const map = {
         }
     },
 
-    render(snakePointsArray, foodPoint) {
+    render(snakePointsArray, foodPoint, barrierPoint) {
         for (const cell of this.usedCells) {
             cell.className = 'cell';
         }
@@ -108,6 +108,12 @@ const map = {
         const foodCell = this.cells[`x${foodPoint.x}_y${foodPoint.y}`];
         foodCell.classList.add('food');
         this.usedCells.push(foodCell);
+        
+        if(barrierPoint.x !== null && barrierPoint.y !== null) {
+            const barrierCell = this.cells[`x${barrierPoint.x}_y${barrierPoint.y}`];
+            barrierCell.classList.add('barrier');
+            this.usedCells.push(barrierCell);
+        }
     },
     setHeaderText(snakeLength = 1) {
         switch (snakeLength) {
@@ -198,6 +204,27 @@ const food = {
     },
 };
 
+const barrier = {
+    x: null,
+    y: null,
+
+    getCoordinates() {
+        return {
+            x: this.x,
+            y: this.y,
+        }
+    },
+
+    setCoordinates(point) {
+        this.x = point.x;
+        this.y = point.y;
+    },
+
+    isOnPoint(point) {
+        return this.x === point.x && this.y === point.y;
+    },
+};
+
 const status = {
     condition: null,
 
@@ -227,7 +254,9 @@ const game = {
     map,
     snake,
     food,
+    barrier,
     status,
+    tickCount: 0,
     tickInterval: null,
 
     init(userSettings) {
@@ -256,7 +285,7 @@ const game = {
     },
 
     render() {
-        this.map.render(this.snake.getBody(), this.food.getCoordinates());
+        this.map.render(this.snake.getBody(), this.food.getCoordinates(), this.barrier.getCoordinates());
     },
 
     play() {
@@ -288,14 +317,16 @@ const game = {
         if (this.food.isOnPoint(this.snake.getNextStepHeadPoint())) {
             this.snake.growUp();
             this.food.setCoordinates(this.getRandomFreeCoordinates());
+            
 
             if (this.isGameWon()) {
                 this.finish();
             }
-        }
-
-        this.snake.makeStep();
+        }this.snake.makeStep();
         this.render();
+        this.tickCount++;
+        if(this.tickCount % 20 === 0) this.barrier.setCoordinates(this.getRandomFreeCoordinates());
+        
     },
 
     canMakeStep() {
@@ -305,7 +336,9 @@ const game = {
             && nextHeadPoint.x < this.config.getColsCount()
             && nextHeadPoint.y < this.config.getRowsCount()
             && nextHeadPoint.x >= 0
-            && nextHeadPoint.y >= 0;
+            && nextHeadPoint.y >= 0
+            && !(nextHeadPoint.x === this.barrier.getCoordinates().x
+            && nextHeadPoint.y === this.barrier.getCoordinates().y);
     },
 
     isGameWon() {
@@ -329,7 +362,7 @@ const game = {
     },
 
     getRandomFreeCoordinates() {
-        const exclude = [this.food.getCoordinates(), ...this.snake.getBody()];
+        const exclude = [this.food.getCoordinates(), this.barrier.getCoordinates(), ...this.snake.getBody()];
 
         while (true) {
             const rndPoint = {
