@@ -62,6 +62,7 @@ const config = {
 
 const map = {
     cells: {},
+    header: null,
     usedCells: [],
 
     init(rowsCount, colsCount) {
@@ -71,6 +72,9 @@ const map = {
         this.cells = {} // { x1_y1: td, x1_y2: td, ... , xn_yn}
         this.usedCells = [];
 
+        this.header = document.createElement('h1');
+        this.setHeaderText();
+        table.insertAdjacentElement("beforebegin", this.header);
         for (let row = 0; row < rowsCount; row++) {
             const tr = document.createElement('tr');
             tr.classList.add('row');
@@ -91,6 +95,7 @@ const map = {
             cell.className = 'cell';
         }
 
+        this.setHeaderText(snakePointsArray.length);
         this.usedCells = [];
 
         snakePointsArray.forEach((point, index) => {
@@ -104,6 +109,15 @@ const map = {
         foodCell.classList.add('food');
         this.usedCells.push(foodCell);
     },
+    setHeaderText(snakeLength = 1) {
+        switch (snakeLength) {
+            case 1: 
+                this.header.innerHTML = `Для начала игры нажмите кнопку "Старт"`; 
+                break;
+            default:
+                this.header.innerHTML = `Ваш счет: ${snakeLength - 1}`;
+        }
+    }
 };
 
 const snake = {
