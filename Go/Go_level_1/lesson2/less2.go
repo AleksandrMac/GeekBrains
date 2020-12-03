@@ -3,6 +3,7 @@ package main
 import (
 	"fmt"
 	"os"
+	"reflect"
 )
 
 func main() {
@@ -10,10 +11,10 @@ func main() {
 	var op string
 	fmt.Println("Введите первое число")
 
-	scanNumber(&a)
+	validScan(&a)
 
 	fmt.Println("Введите второе число")
-	scanNumber(&b)
+	validScan(&b)
 
 	fmt.Println("Введите арифметическую операцию:")
 	fmt.Scanln(&op)
@@ -34,13 +35,13 @@ func main() {
 	fmt.Printf("Результат: %f\n", res)
 }
 
-func scanNumber(param interface{}) {
+func validScan(param interface{}) {
 	for {
 		count, err := fmt.Scanln(param)
 		if err == nil && count == 1 {
 			break
 		} else {
-			fmt.Println("Please input correct number")
+			fmt.Println("Please input correct", reflect.TypeOf(param))
 		}
 	}
 }
