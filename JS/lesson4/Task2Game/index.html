@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Lesson 4 - Objects</title>
+    <script src="./game.js"></script>
+</head>
+<body>
+<script>
+    // const obj = new Object();
+    // const obj = Object;
+    // const obj = {};
+    // console.log(obj);
+
+    // function getPropName(str) {
+    //     return 'new prop ' + str;
+    // }
+    //
+    // const myCar = {
+    //     manufacturer: 'Toyota',
+    //     color: 'Black',
+    //     'prop with space': 1,
+    //     [getPropName('hello')]: 123,
+    // };
+    // const prop = 'color';
+    // myCar.power = 123;
+    // console.log(myCar.manufacturer);
+    // console.log(myCar['prop with space']);
+    // console.log(myCar[prop]); // myCar.color -> myCar['color']
+    // console.log(myCar.power);
+    // delete myCar.power;
+    // console.log(myCar.power);
+
+    const myCar = {
+        manufacturer: 'Toyota',
+        color: 'black',
+        engine: {
+           power: 200,
+           code: '******',
+        },
+        possibleColors: ['black', 'white', 'red', 'blue'],
+        // beep: function () {
+        //     console.log('Beep!!!')
+        // },
+        beep () {
+            console.log(this);
+            console.log(this.manufacturer + ' Beep!!!')
+        },
+        getEnginePower() {
+            return this.engine.power;
+        },
+        // beep: () => {
+        //     console.log(this);
+        //     console.log(this.manufacturer + ' Beep!!!')
+        // },
+        // [Symbol.iterator]: function* () {
+        //     yield '123';
+        // },
+    };
+
+    // console.log(myCar.engine);
+    // console.log(myCar.possibleColors);
+    // myCar.beep();
+    // console.log(myCar.getEnginePower());
+
+    // console.log(Object.keys(myCar));
+    // console.log(Object.getOwnPropertyNames(myCar));
+
+    // Object.keys(myCar).forEach(function (key) {
+    //     console.log(myCar[key]);
+    // });
+
+    // for (const prop in myCar) {
+    //     console.log(prop);
+    // }
+
+    // for (const val of myCar) {
+    //     console.log(val);
+    // }
+
+    // console.log('color' in myCar);
+
+    // function inc(a) {
+    //     a++;
+    //     console.log(a);
+    // }
+    //
+    // let a = 1;
+    //
+    // inc(a);
+    // console.log(a); // 1
+
+    // const obj = {
+    //     num: 5,
+    // }
+    //
+    // function inc(a) {
+    //     const copy = Object.create(a);
+    //     a.num++;
+    // }
+    //
+    // console.log(obj);
+    // inc(obj);
+    // console.log(obj);
+    // console.log(obj.num); // ?
+</script>
+</body>
+</html>
