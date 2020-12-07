@@ -27,6 +27,10 @@ func main() {
 	case "*":
 		res = a * b
 	case "/":
+		if b == 0 {
+			fmt.Println("Деление на ноль не возможно.")
+			break
+		}
 		res = a / b
 	default:
 		fmt.Println("Операция выбрана неверно")
@@ -40,8 +44,7 @@ func validScan(param interface{}) {
 		count, err := fmt.Scanln(param)
 		if err == nil && count == 1 {
 			break
-		} else {
-			fmt.Println("Please input correct", reflect.TypeOf(param))
 		}
+		fmt.Println("Please input correct", reflect.TypeOf(param))
 	}
 }
