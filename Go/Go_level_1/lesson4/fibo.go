@@ -53,7 +53,8 @@ func (f fibo) Set(n int64) {
 	default:
 		if f.mapa[n-1] > 0 {
 			f.mapa[n] = f.mapa[n-1] + f.mapa[n-2]
+		} else {
+			f.Set(n - 1)
 		}
-		f.Set(n - 1)
 	}
 }
