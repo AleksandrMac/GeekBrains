@@ -39,12 +39,12 @@ func main() {
 	fmt.Printf("Результат: %f\n", res)
 }
 
-func validScan(param interface{}) {
+func validScan(param interface{}) (count int, err error) {
 	for {
 		count, err := fmt.Scanln(param)
 		if err == nil && count == 1 {
-			break
+			return count, err
 		}
-		fmt.Println("Please input correct", reflect.TypeOf(param))
+		return fmt.Println("Please input correct", reflect.TypeOf(param))
 	}
 }
