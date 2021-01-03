@@ -45,6 +45,6 @@ func validScan(param interface{}) (count int, err error) {
 		if err == nil && count == 1 {
 			return count, err
 		}
-		return fmt.Println("Please input correct", reflect.TypeOf(param))
+		fmt.Println("Please input correct", reflect.TypeOf(param))
 	}
 }
