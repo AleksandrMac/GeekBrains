@@ -1,11 +1,10 @@
-package main
+package prime
 
 import (
-	"fmt"
 	"math"
 )
 
-func main() {
+/*func main() {
 	fmt.Println("please, input topLimit fot prime number")
 	var topLimit int64
 	fmt.Scanln(&topLimit)
@@ -14,10 +13,11 @@ func main() {
 			fmt.Println(i)
 		}
 	}
-}
+}*/
 
-func isPrimeNumber(num int64) bool {
-	if num == 1 || num == 0 {
+//IsPrimeNumber - возвращает истину когды num является простым числом, иначе ложь
+func IsPrimeNumber(num int64) bool {
+	if num < 2 {
 		return false
 	}
 	// ищем числа квадрат которых не превосходит делимого, при делении на которые остаток будет равен нулю
