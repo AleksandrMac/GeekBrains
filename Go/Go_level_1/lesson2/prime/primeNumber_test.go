@@ -1,6 +1,7 @@
 package prime
 
 import (
+	"fmt"
 	"testing"
 )
 
@@ -32,4 +33,27 @@ func TestIsPrimeNumber(t *testing.T) {
 		}
 	}
 
+}
+
+func ExampleIsPrimeNumber() {
+	number := int64(-5)
+	fmt.Printf("Число %v является простым?, %v", number, IsPrimeNumber(number))
+
+	number = int64(-1)
+	fmt.Printf("Число %v является простым?, %v", number, IsPrimeNumber(number))
+
+	number = int64(0)
+	fmt.Printf("Число %v является простым?, %v", number, IsPrimeNumber(number))
+
+	number = int64(1)
+	fmt.Printf("Число %v является простым?, %v", number, IsPrimeNumber(number))
+
+	number = int64(2)
+	fmt.Printf("Число %v является простым?, %v", number, IsPrimeNumber(number))
+
+	number = int64(4)
+	fmt.Printf("Число %v является простым?, %v", number, IsPrimeNumber(number))
+
+	number = int64(7)
+	fmt.Printf("Число %v является простым?, %v", number, IsPrimeNumber(number))
 }

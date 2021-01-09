@@ -15,7 +15,7 @@ import (
 	}
 }*/
 
-//IsPrimeNumber - возвращает истину когды num является простым числом, иначе ложь
+//IsPrimeNumber - возвращает истину когда num является простым числом, иначе ложь
 func IsPrimeNumber(num int64) bool {
 	if num < 2 {
 		return false
