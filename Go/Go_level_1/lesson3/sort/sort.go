@@ -1,4 +1,4 @@
-package main
+package sort
 
 import (
 	"fmt"
@@ -7,17 +7,18 @@ import (
 func main() {
 	slice := []int32{5, -2, 5, 3, 9, 8, 6, 2, 1, 0, 6, 2, -1}
 
-	sortSlice := bubbleSort(slice)
+	sortSlice := BubbleSort(slice)
 	fmt.Println("unsort", slice)
 	fmt.Println("bubble sort", sortSlice)
 
-	sortSlice = insertSort(slice)
+	sortSlice = InsertSort(slice)
 	fmt.Println("unsort", slice)
 	fmt.Println("insert sort", sortSlice)
 
 }
 
-func bubbleSort(slice []int32) []int32 {
+//BubbleSort -
+func BubbleSort(slice []int32) []int32 {
 	sortedSlice := make([]int32, len(slice))
 	copy(sortedSlice, slice)
 	for i := 0; i < len(sortedSlice); i++ {
@@ -31,7 +32,8 @@ func bubbleSort(slice []int32) []int32 {
 
 }
 
-func insertSort(slice []int32) []int32 {
+// InsertSort -
+func InsertSort(slice []int32) []int32 {
 	sortedSlice := make([]int32, len(slice))
 
 	for i := 0; i < len(slice); i++ {
