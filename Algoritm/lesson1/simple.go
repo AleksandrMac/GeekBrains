@@ -4,6 +4,7 @@ package lesson1
 //
 import (
 	"errors"
+	"math"
 	"math/rand"
 	"time"
 )
@@ -38,4 +39,32 @@ func Rand100Default() uint64 {
 func Rand100Custom() uint64 {
 	startN := time.Now().Nanosecond()
 	return uint64(3*startN/1234+1)%100 + 1
+}
+
+//14. * Автоморфные числа. Натуральное число называется автоморфным, если оно равно последним
+// цифрам своего квадрата. Например, 25 \ :sup: `2` = 625. Напишите программу, которая вводит
+// натуральное число N и выводит на экран все автоморфные числа, не превосходящие N.
+
+//AutomorphicNumbers -
+func AutomorphicNumbers(top uint32) []uint32 {
+	slice := []uint32{}
+	for i := uint32(0); i < top; i++ {
+		pow2 := i * i
+		l := lenNum(int64(i))
+		if i == pow2%uint32(math.Pow(10, float64(l))) {
+			slice = append(slice, i)
+		}
+	}
+	return slice
+}
+
+//LenNum -
+func lenNum(num int64) (len uint16) {
+	num = int64(math.Abs(float64(num)))
+	len = 1
+	for num >= 10 {
+		num = num / 10
+		len++
+	}
+	return len
 }
