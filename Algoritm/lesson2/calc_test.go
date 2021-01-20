@@ -16,7 +16,8 @@ var calcPerformerTests = []calcPerformerTest{
 	{"test3", 2, 3, 1},
 	{"test4", 2, 4, 2},
 	{"test5", 2, 5, 2},
-	{"test7", 3, 20, 32},
+	{"test7", 3, 20, 18},
+	{"test8", 2, 22, 37},
 }
 
 func TestCalcPerformer(t *testing.T) {
