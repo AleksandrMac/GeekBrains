@@ -23,6 +23,10 @@ func Main() {
 	fmt.Println("unsort", slice)
 	fmt.Println("insert sort", sortSlice)
 
+	sortSlice = ShakerSort(slice)
+	fmt.Println("unsort", slice)
+	fmt.Println("insert sort", sortSlice)
+
 }
 
 //BubbleSort -
@@ -74,5 +78,42 @@ func InsertSort(slice []int32) []int32 {
 		sortedSlice[j] = key
 	}
 	fmt.Println("\nInsertSort - count =", count)
+	return sortedSlice
+}
+
+//2. *Реализовать шейкерную сортировку
+
+//ShakerSort -
+func ShakerSort(slice []int32) []int32 {
+	sortedSlice := make([]int32, len(slice))
+	copy(sortedSlice, slice)
+	count := int32(0)
+
+	for k := 0; k < len(sortedSlice)-1; k++ {
+		i := k
+		var mPostion int
+		var j int
+		//ищем максимальный эллемент, запоминаем его, меняем его с крайним справа эллементом
+		for j = mPostion + 1; j < len(sortedSlice)-i; j++ {
+			if sortedSlice[mPostion] < sortedSlice[j] {
+				mPostion = j
+			}
+			count++
+		}
+		j--
+		sortedSlice[mPostion], sortedSlice[j] = sortedSlice[j], sortedSlice[mPostion]
+		i++
+		mPostion = len(sortedSlice) - i - 1
+		for j = mPostion - 1; j >= i-1; j-- {
+			if sortedSlice[mPostion] > sortedSlice[j] {
+				mPostion = j
+			}
+			count++
+		}
+		j++
+		sortedSlice[mPostion], sortedSlice[j] = sortedSlice[j], sortedSlice[mPostion]
+	}
+
+	fmt.Println("\nShakerSort - count =", count)
 	return sortedSlice
 }
