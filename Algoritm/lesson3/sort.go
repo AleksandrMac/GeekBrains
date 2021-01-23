@@ -27,6 +27,9 @@ func Main() {
 	fmt.Println("unsort", slice)
 	fmt.Println("insert sort", sortSlice)
 
+
+	fmt.Println("insert sort", FindBin())
+
 }
 
 //BubbleSort -
@@ -85,6 +88,8 @@ func InsertSort(slice []int32) []int32 {
 
 //ShakerSort -
 func ShakerSort(slice []int32) []int32 {
+	//можно оптимизировать в 2 раза, если за один проход будем искать и минимум и максимум,
+	//и расставлять их соответственно в начало и конец. A(n/2 * n/2)
 	sortedSlice := make([]int32, len(slice))
 	copy(sortedSlice, slice)
 	count := int32(0)
@@ -116,4 +121,9 @@ func ShakerSort(slice []int32) []int32 {
 
 	fmt.Println("\nShakerSort - count =", count)
 	return sortedSlice
+}
+
+//FindBin -
+func p []int32 FindBin(slice []int32) int32 {
+	return 0
 }
