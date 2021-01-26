@@ -4,6 +4,7 @@ import (
 	"fmt"
 
 	"github.com/AleksandrMac/GeekBrains/algoritm/lesson1"
+	"github.com/AleksandrMac/GeekBrains/algoritm/lesson3"
 )
 
 func main() {
@@ -11,4 +12,6 @@ func main() {
 	// 	fmt.Println(lesson1.Rand100Default(), "\t", lesson1.Rand100Custom())
 	// }
 	fmt.Println(lesson1.AutomorphicNumbers(10000))
+
+	lesson3.Main()
 }
