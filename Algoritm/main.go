@@ -1,6 +1,8 @@
 package main
 
 import (
+	"fmt"
+
 	"github.com/AleksandrMac/GeekBrains/algoritm/lesson4"
 )
 
@@ -10,5 +12,8 @@ func main() {
 	// }
 	//fmt.Println(lesson1.AutomorphicNumbers(10000))
 
-	lesson4.Horse(5)
+	slice := lesson4.Horse(5)
+	for i := 0; i < len(slice); i++ {
+		fmt.Println(slice[i])
+	}
 }
