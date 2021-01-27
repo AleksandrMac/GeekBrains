@@ -12,7 +12,7 @@ func main() {
 	// }
 	//fmt.Println(lesson1.AutomorphicNumbers(10000))
 
-	slice := lesson4.Horse(5)
+	slice := lesson4.Horse(8)
 	for i := 0; i < len(slice); i++ {
 		fmt.Println(slice[i])
 	}

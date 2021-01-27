@@ -43,9 +43,10 @@ func Horse(m int) [][]int32 {
 		if !equal(step, notPoint) {
 			slice[step.y][step.x] = steps.number + 1
 			steps.historyPoint = append(steps.historyPoint, step)
+			s := steps
 			steps = Steps{
 				number:       steps.number + 1,
-				prev:         &steps,
+				prev:         &s,
 				point:        step,
 				historyPoint: []Point{},
 			}
