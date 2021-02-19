@@ -42,9 +42,10 @@ func main() {
 func validScan(param interface{}) {
 	for {
 		count, err := fmt.Scanln(param)
+		fmt.Println(count)
 		if err == nil && count == 1 {
 			break
 		}
-		fmt.Println("Please input correct", reflect.TypeOf(param))
+		fmt.Println("Please input correct data, expected:", reflect.TypeOf(param))
 	}
 }
