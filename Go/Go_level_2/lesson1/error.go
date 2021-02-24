@@ -28,16 +28,19 @@ func fileCreate(filename string) error {
 	f, err := os.Create(filename)
 	if err != nil {
 		fmt.Println(err)
+		return err
 	}
-	defer func() {
-		if v := f.Close(); v != nil {
+	defer func() error {
+		if err := f.Close(); err != nil {
 			var err error
 			err = New("closed file")
-			fmt.Println(fmt.Errorf("%v\n%w", err, v))
+			fmt.Println(fmt.Errorf("%v\n%w", err, err))
+			return err
 		}
+		return nil
 	}()
 	fmt.Println(f.Name())
-	return err
+	return nil
 }
 
 func main() {
