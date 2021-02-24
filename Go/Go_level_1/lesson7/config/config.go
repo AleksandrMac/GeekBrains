@@ -1,3 +1,6 @@
+// Package config implements functions to manipulate configurations
+//
+//Config(params ...string /*    file *os.File, format string = "auto"*/)
 package config
 
 import (
@@ -9,10 +12,9 @@ import (
 	"strings"
 )
 
-// Config - возвращает данные из конфигурационного файла
-//первый аргумент имя файла,
-//второй тип структуры файла, есл не указан определяется из разрешения файла
-//далее перечень параметров необходимых для считывания, в случае отсутствия, возвращается полный список
+// Config - returns data from the configuration file, the first argument is the file name, the second type of file structure,
+//if not specified is determined from the file resolution,
+//then the list of parameters required for reading, if absent, the full list is returned
 func Config(params ...string /*    file *os.File, format string = "auto"*/) (conf map[string]interface{}, err map[string]error) {
 
 	conf = make(map[string]interface{})

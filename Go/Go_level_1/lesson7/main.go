@@ -3,8 +3,8 @@ package main
 import (
 	"errors"
 	"fmt"
-	"lesson7/config"
-	"lesson7/valid"
+	"go_level_1/lesson7/config"
+	"go_level_1/lesson7/valid"
 	"log"
 )
 
