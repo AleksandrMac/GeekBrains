@@ -24,23 +24,21 @@ func (e *ErrorWithTime) Error() string {
 	return fmt.Sprintf("error:\t%s\t%s:", e.text, e.time)
 }
 
-func fileCreate(filename string) error {
-	f, err := os.Create(filename)
+func fileCreate(filename string) (err error) {
+	var f *os.File
+	f, err = os.Create(filename)
 	if err != nil {
 		fmt.Println(err)
-		return err
+		return
 	}
-	defer func() error {
-		if err := f.Close(); err != nil {
-			var err error
-			err = New("closed file")
-			fmt.Println(fmt.Errorf("%v\n%w", err, err))
-			return err
+	defer func() {
+		if err = f.Close(); err == nil {
+			err = fmt.Errorf("%v\n\t%w", New("closed file"), err)
+			fmt.Println("inside", err)
 		}
-		return nil
 	}()
 	fmt.Println(f.Name())
-	return nil
+	return
 }
 
 func main() {
@@ -52,7 +50,7 @@ func main() {
 		}
 	}()
 
-	fileCreate("tratata.txt")
+	fmt.Println("outside", fileCreate("tratata.txt"))
 
 	var a int
 	a = 1 / a
