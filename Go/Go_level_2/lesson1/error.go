@@ -6,13 +6,13 @@ import (
 	"time"
 )
 
-//ErrorWithTime -
+// ErrorWithTime -
 type ErrorWithTime struct {
 	text string
 	time string
 }
 
-//New -
+// New -
 func New(text string) error {
 	return &ErrorWithTime{
 		text: text,
