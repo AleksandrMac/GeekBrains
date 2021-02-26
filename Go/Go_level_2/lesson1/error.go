@@ -4,6 +4,8 @@ import (
 	"fmt"
 	"os"
 	"time"
+
+	_ "github.com/AleksandrMac/test_version"
 )
 
 // ErrorWithTime -
@@ -32,7 +34,7 @@ func fileCreate(filename string) (err error) {
 		return
 	}
 	defer func() {
-		if err = f.Close(); err == nil {
+		if err = f.Close(); err != nil {
 			err = fmt.Errorf("%v\n\t%w", New("closed file"), err)
 			fmt.Println("inside", err)
 		}

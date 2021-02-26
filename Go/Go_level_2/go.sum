@@ -1,0 +1,6 @@
+github.com/AleksandrMac/test_version v0.0.1 h1:QzrIpacZn5fsCktU46/5KfsaFJUZTIICTIJ/eSehJ1c=
+github.com/AleksandrMac/test_version v0.0.1/go.mod h1:Ba2QvJEZT8mt1PomKpmlAJGkYztrrUtr9tGbWrwvrU4=
+github.com/AleksandrMac/test_version v2.0.0+incompatible h1:k7H2zZ0RistIy/oiTdqGkYNDRyCPVriXz2/olcAfkog=
+github.com/AleksandrMac/test_version v2.0.0+incompatible/go.mod h1:Ba2QvJEZT8mt1PomKpmlAJGkYztrrUtr9tGbWrwvrU4=
+github.com/AleksandrMac/test_version/v2 v2.0.1 h1:P5+oIxNHU1rNvHcw0UBTSYkbArd0/10q3/XWPmHZrrM=
+github.com/AleksandrMac/test_version/v2 v2.0.1/go.mod h1:aH+H/bSaI3ckxKrXtVJHSW0qSqlGg+RpYkYorMVZI8Q=
