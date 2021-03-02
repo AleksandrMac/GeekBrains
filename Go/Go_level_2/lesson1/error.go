@@ -4,8 +4,6 @@ import (
 	"fmt"
 	"os"
 	"time"
-
-	_ "github.com/AleksandrMac/test_version"
 )
 
 // ErrorWithTime -
