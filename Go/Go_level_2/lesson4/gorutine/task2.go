@@ -4,6 +4,7 @@ import (
 	"context"
 	"fmt"
 	"os"
+	"os/signal"
 	"syscall"
 	"time"
 )
@@ -11,38 +12,67 @@ import (
 // Task2 Написать программу, которая при получении в канал сигнала SIGTERM
 // останавливается не позднее, чем за одну секунду (установить таймаут).
 func Task2() {
-	sys := make(chan os.Signal)
-	ch := make(chan int, 10)
-	go func() {
-		for {
-			time.Sleep(1 * time.Second)
-			fmt.Println(<-ch)
-		}
-	}()
-	go func() {
-		for i := 0; ; i++ {
-			ch <- i
-		}
-	}()
 
-	go func() {
-		time.Sleep(5 * time.Second)
-		sys <- syscall.SIGTERM
-	}()
+	var (
+		sys         = make(chan os.Signal)
+		ctx, cancel = context.WithCancel(context.Background())
+		hr          = func(ctx context.Context, cacancel context.CancelFunc) {
+			select {
+			case val := <-sys:
+				switch val {
+				case syscall.SIGTERM:
+					cancel()
+					fmt.Println("поступил сигнал SIGTERM :", val.String(), time.Now().Local().String())
+					time.Sleep(1 * time.Second)
+					os.Exit(int(syscall.SIGTERM))
+				default:
+					cancel()
+					fmt.Println("поступил неизвестный сигнал выход по неизвестному сигналу :", val.String(), time.Now().Local().String())
+					time.Sleep(1 * time.Second)
+					os.Exit(int(syscall.SIGKILL))
+				}
+			}
+		}
+		jobs    = make(chan int)
+		manager = func(ctx context.Context) {
+			for job := 0; ; job += 1 {
+				select {
+				case <-ctx.Done():
+					close(jobs)
+					fmt.Println("manager goes home")
+					return
+				default:
+					fmt.Printf("manager create job %d\n", job)
+					jobs <- job
+				}
+			}
+		}
+		resource = make(chan struct{}, 10)
+		worker   = func(id int) {
+			defer func() { <-resource }()
+			for job := range jobs {
+				fmt.Printf("worker %d starts processing of %d\n", id, job)
+				<-time.NewTicker(1 * time.Second).C
+				fmt.Printf("worker %d completes processing of %d\n", id, job)
+			}
+			fmt.Printf("worker %d goes home\n", id)
+		}
+	)
+	signal.Notify(sys, syscall.SIGINT, syscall.SIGTERM)
+	go manager(ctx)
+	go hr(ctx, cancel)
+
+	for i := 0; i < cap(resource); i += 1 {
+		resource <- struct{}{}
+		go worker(i)
+	}
 
 	select {
-	case val := <-sys:
-		switch val {
-		case syscall.SIGTERM:
-			fmt.Println("поступил сигнал SIGTERM :", val.String(), time.Now().Local().String())
-			ctx, cancel := context.WithTimeout(context.Background(), 1*time.Second)
-			defer cancel()
-			select {
-			case <-ctx.Done():
-				fmt.Println("выход по сигналу SIGTERM:", val.String(), time.Now().Local().String())
-			}
-		default:
-			fmt.Println("выход по неизвестному сигналу :", val.String(), time.Now().Local().String())
+	case <-ctx.Done():
+		for i := 0; i < cap(resource); i += 1 {
+			resource <- struct{}{}
 		}
+		close(resource)
+		return
 	}
 }
