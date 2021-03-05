@@ -9,6 +9,10 @@ import (
 func main() {
 	fmt.Println("----------Task1-------------")
 	task.Task1()
-	fmt.Println("----------Task1-------------")
+
+	fmt.Println("----------Task2-------------")
 	task.Task2()
+
+	fmt.Println("----------Task3-------------")
+	//task.Task3()
 }

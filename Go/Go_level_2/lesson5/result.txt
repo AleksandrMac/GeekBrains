@@ -1,0 +1,11 @@
+goos: windows
+goarch: amd64
+cpu: Intel(R) Core(TM) i7-2600 CPU @ 3.40GHz
+BenchmarkTask3Mutex/8-8   	            2822	    443900 ns/op	   34372 B/op	      83 allocs/op
+BenchmarkTask3Mutex/8#01-8         	   10000	    220440 ns/op	   13572 B/op	      33 allocs/op
+BenchmarkTask3Mutex/8#02-8         	   16497	    265150 ns/op	    6489 B/op	      16 allocs/op
+BenchmarkTask3RWMutex/8-8          	   10000	    147104 ns/op	     726 B/op	       3 allocs/op
+BenchmarkTask3RWMutex/8#01-8       	   14587	    117004 ns/op	     280 B/op	       2 allocs/op
+BenchmarkTask3RWMutex/8#02-8       	   10000	    352956 ns/op	    1587 B/op	       6 allocs/op
+PASS
+ok  	command-line-arguments	23.241s
