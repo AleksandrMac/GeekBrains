@@ -9,7 +9,7 @@ import (
 )
 
 type Procent struct {
-	read, write int
+	write, read int
 }
 
 func BenchmarkTask3Mutex(b *testing.B) {
@@ -24,7 +24,7 @@ func BenchmarkTask3Mutex(b *testing.B) {
 			b.SetParallelism(100)
 			b.RunParallel(func(pb *testing.PB) {
 				for pb.Next() {
-					task.Task3Mutex(val.read, val.write)
+					task.Task3Mutex(val.write, val.read)
 				}
 			})
 
@@ -43,7 +43,7 @@ func BenchmarkTask3RWMutex(b *testing.B) {
 			b.SetParallelism(100)
 			b.RunParallel(func(pb *testing.PB) {
 				for pb.Next() {
-					task.Task3RWMutex(val.read, val.write)
+					task.Task3RWMutex(val.write, val.read)
 				}
 			})
 		})

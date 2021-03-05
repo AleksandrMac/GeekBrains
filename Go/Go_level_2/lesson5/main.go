@@ -14,5 +14,6 @@ func main() {
 	task.Task2()
 
 	fmt.Println("----------Task3-------------")
-	//task.Task3()
+	task.Task3Mutex(50, 50)
+	task.Task3RWMutex(50, 50)
 }

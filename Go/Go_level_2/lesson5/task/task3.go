@@ -33,7 +33,7 @@ func Task3Mutex(w, r int) {
 }
 
 // Task3RWMutex -
-func Task3RWMutex(r, w int) {
+func Task3RWMutex(w, r int) {
 	var count counter
 	lock := sync.RWMutex{}
 
