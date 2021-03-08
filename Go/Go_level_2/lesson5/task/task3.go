@@ -1,6 +1,8 @@
 package task
 
-import "sync"
+import (
+	"sync"
+)
 
 const num = 1
 
@@ -16,19 +18,19 @@ func Task3Mutex(w, r int) {
 	lock := sync.Mutex{}
 
 	for i := 0; i < num*w; i++ {
-		go func(count *counter) {
+		go func(count *counter, lock *sync.Mutex) {
 			lock.Lock()
 			defer lock.Unlock()
 			count.add()
-		}(&count)
+		}(&count, &lock)
 	}
 
 	for i := 0; i < num*r; i++ {
-		go func(count *counter) {
+		go func(count *counter, lock *sync.Mutex) {
 			lock.Lock()
 			defer lock.Unlock()
 			_ = *count
-		}(&count)
+		}(&count, &lock)
 	}
 }
 
@@ -36,20 +38,26 @@ func Task3Mutex(w, r int) {
 func Task3RWMutex(w, r int) {
 	var count counter
 	lock := sync.RWMutex{}
+	wg := sync.WaitGroup{}
 
 	for i := 0; i < num*w; i++ {
-		go func(count *counter) {
+		wg.Add(1)
+		go func(count *counter, lock *sync.RWMutex) {
+			defer wg.Done()
 			lock.Lock()
 			defer lock.Unlock()
 			count.add()
-		}(&count)
+		}(&count, &lock)
 	}
 
 	for i := 0; i < num*r; i++ {
-		go func(count *counter) {
+		wg.Add(1)
+		go func(count *counter, lock *sync.RWMutex) {
+			defer wg.Done()
 			lock.RLock()
 			defer lock.RUnlock()
 			_ = *count
-		}(&count)
+		}(&count, &lock)
 	}
+	//fmt.Println(count)
 }
