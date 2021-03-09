@@ -46,3 +46,14 @@ func Task2() {
 		}
 	}
 }
+
+// Task3 - Смоделировать ситуацию “гонки”, и проверить программу на наличии “гонки”
+func Task3() {
+	var count uint32
+
+	for i := 0; i < num; i++ {
+		go func(count *uint32) {
+			*count++
+		}(&count)
+	}
+}
