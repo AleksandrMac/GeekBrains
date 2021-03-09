@@ -23,12 +23,12 @@ func main() {
 
 	v := map[string]interface{}{
 		"FieldString": "NewString",
-		"FieldInt":    555,
+		"FieldInt":    "555",
 		"Slice":       []int{1, 2, 3},
 		"Object":      struct{ NestedField int }{NestedField: 777},
 	}
 
 	// task.PrintStruct(&st1)
-	err := task.Task1(st1, v)
+	err := task.Task1(&st1, v)
 	fmt.Println(err)
 }

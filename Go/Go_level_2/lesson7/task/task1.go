@@ -17,35 +17,33 @@ func Task1(in interface{}, values map[string]interface{}) (err error) {
 		return fmt.Errorf("\"in\" is nil")
 	}
 
-	val := reflect.ValueOf(&in)
-	val = val.Elem()
-	//num := val.NumField()
-	//fmt.Println(num)
+	if values == nil {
+		return fmt.Errorf("\"values\" is empty")
+	}
+
+	val := reflect.ValueOf(in)
 	if val.Kind() == reflect.Ptr {
 		val = val.Elem()
 	}
 
-	// if val.Kind() != reflect.Struct {
-	// 	return fmt.Errorf("\"in\" is not struct")
-	// }
+	if val.Kind() != reflect.Struct {
+		return fmt.Errorf("\"in\" is not struct")
+	}
 
 	for key, v := range values {
-		t := val.FieldByName(key)
-		if t.IsZero() {
-			return fmt.Errorf("field \"%v\" is not correct", key)
+		tmp := val.FieldByName(key)
+		if tmp.IsZero() {
+			err = fmt.Errorf("field \"%v\" is not correct\n%w", key, err)
+			continue
 		}
 		newVal := reflect.ValueOf(v)
-		if t.Type().Kind() != newVal.Type().Kind() {
-			return fmt.Errorf("type field \"%v\" is not correct, expected %v, curent: %v", key, t.Type().Kind().String(), newVal.Type().Kind().String())
+		if tmp.Type().Kind() != newVal.Type().Kind() {
+			err = fmt.Errorf("type field \"%v\" is not correct, expected %v, curent: %v\n%w", key, tmp.Type().Kind().String(), newVal.Type().Kind().String(), err)
+			continue
 		}
-		fmt.Println(t)
-
-		fmt.Println(newVal)
-		tt := t.Elem()
-		tt.Set(newVal)
-		return
+		tmp.Set(newVal)
 	}
-	return fmt.Errorf("\"values\" is empty")
+	return
 }
 
 // PrintStruct -
