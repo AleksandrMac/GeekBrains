@@ -2,6 +2,7 @@ package task
 
 import (
 	"os"
+	"runtime"
 	"runtime/trace"
 	"sync"
 )
@@ -18,10 +19,30 @@ func Task1() {
 	lock := sync.Mutex{}
 
 	for i := 0; i < num; i++ {
-		go func(count *go uint32, lock *sync.Mutex) {
+		go func(count *uint32, lock *sync.Mutex) {
 			lock.Lock()
 			defer lock.Unlock()
 			*count++
 		}(&count, &lock)
+	}
+}
+
+// Task2 - Написать многопоточную программу, в которой будет
+// использоваться явный вызов планировщика. Выполните трассировку программы
+func Task2() {
+	trace.Start(os.Stderr)
+	defer trace.Stop()
+	var count uint32
+	lock := sync.Mutex{}
+
+	for i := 0; i < num; i++ {
+		go func(count *uint32, lock *sync.Mutex) {
+			lock.Lock()
+			defer lock.Unlock()
+			*count++
+		}(&count, &lock)
+		if i%1e2 == 0 {
+			runtime.Gosched()
+		}
 	}
 }
