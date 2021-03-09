@@ -2,7 +2,6 @@ package task
 
 import (
 	"fmt"
-	"log"
 	"reflect"
 )
 
@@ -44,37 +43,4 @@ func Task1(in interface{}, values map[string]interface{}) (err error) {
 		tmp.Set(newVal)
 	}
 	return
-}
-
-// PrintStruct -
-func PrintStruct(in interface{}) {
-	if in == nil {
-		return
-	}
-
-	val := reflect.ValueOf(in)
-	if val.Kind() == reflect.Ptr {
-		val = val.Elem()
-	}
-
-	if val.Kind() != reflect.Struct {
-		return
-	}
-
-	for i := 0; i < val.NumField(); i++ {
-		typeField := val.Type().Field(i)
-
-		if typeField.Type.Kind() == reflect.Struct {
-			log.Printf("nested field: %v", typeField.Name)
-			PrintStruct(val.Field(i).Interface())
-			continue
-		}
-
-		log.Printf("\tname=%s, type=%s, value=%v, tag=`%s`\n",
-			typeField.Name,
-			typeField.Type,
-			val.Field(i),
-			typeField.Tag,
-		)
-	}
 }
