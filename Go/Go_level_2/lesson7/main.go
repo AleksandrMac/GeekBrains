@@ -31,5 +31,5 @@ func main() {
 	// // task.PrintStruct(&st1)
 	// err := task.Task1(&st1, v)
 	// fmt.Println(err)
-	fmt.Println(task.Task2("./task/task1.go", "Type"))
+	fmt.Println(task.Task2("./task/task1.go", "Println"))
 }
