@@ -37,7 +37,7 @@ func Task1(in interface{}, values map[string]interface{}) (err error) {
 		}
 		newVal := reflect.ValueOf(v)
 		if tmp.Type().Kind() != newVal.Type().Kind() {
-			err = fmt.Errorf("type field \"%v\" is not correct, expected %v, curent: %v\n%w", key, tmp.Type().Kind().String(), newVal.Type().Kind().String(), err)
+			err = fmt.Errorf("type field \"%v\" is not correct, expected %v, curent: %v\n%w", key, tmp.Type().Kind(), newVal.Type().Kind(), err)
 			continue
 		}
 		tmp.Set(newVal)
