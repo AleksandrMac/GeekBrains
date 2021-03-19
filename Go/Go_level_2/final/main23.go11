@@ -1,9 +1,7 @@
-package main
 
 import (
 	"flag"
 	"fmt"
-	"hash/adler32"
 	"hash/crc32"
 	"log"
 	"os"
@@ -16,7 +14,7 @@ var (
 )
 
 func init() {
-	delete = flag.Bool("delete", true, "used to remove duplicate files")
+	delete = flag.Bool("delete", false, "used to remove duplicate files")
 	dir = flag.String("dir", ".", "directory to scan")
 	flag.Parse()
 }
@@ -36,38 +34,21 @@ func main() {
 	for _, item := range list {
 		file, _ := os.Open(item)
 		fileStat, _ := file.Stat()
-		fmt.Println(item, fileStat.Size())
-		fmt.Println([]byte(fileStat.Name() + fmt.Sprintln(fileStat.Size())))
+		//fmt.Println(fileStat.Name(), fileStat.Size())
 		crc.Write([]byte(fileStat.Name() + fmt.Sprintln(fileStat.Size())))
-		//sum := crc.Sum32()
-		sum := adler32.Checksum([]byte(fileStat.Name() + fmt.Sprintln(fileStat.Size())))
+		sum := crc.Sum32()
 		if fileSum[sum] == nil {
 			fileSum[sum] = make([]string, 0, 4)
 		}
-		fmt.Println(sum)
+		//fmt.Println(sum)
 		fileSum[sum] = append(fileSum[sum], item)
 	}
 
-	for _, items := range fileSum {
-		if len(items) > 1 {
+	for _, item := range fileSum {
+		if len(item) > 1 {
 			fmt.Println("Найдены дублирующиеся файлы:")
-			for i, it := range items {
-				fmt.Printf(" \t%d) %q\n", i, it)
-			}
-			if *delete {
-				fmt.Println("Введите индекс файла, который необходимо сохранить:")
-				var ind uint16
-				err := fmt.Errorf("")
-				for err != nil {
-					fmt.Println("Введите целое число >= 0")
-					_, err = fmt.Fscan(os.Stdin, &ind)
-				}
-				for i, item := range items {
-					if uint16(i) != ind {
-						fmt.Println("Удаляется файл: ", item)
-						fmt.Println(os.Remove(item))
-					}
-				}
+			for _, it := range fileSum {
+				fmt.Printf(" \t%q", it)
 			}
 		}
 	}
