@@ -20,6 +20,7 @@ func init() {
 }
 
 func main() {
+	fmt.Println(find.ReadDir(".."))
 	duplicateList, err := find.GetDuplicate(*dir)
 	if err != nil {
 		log.Println(err)

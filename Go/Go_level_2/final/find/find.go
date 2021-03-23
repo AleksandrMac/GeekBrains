@@ -8,6 +8,8 @@ import (
 	"sync"
 )
 
+// GetDuplicate reads the directory named by dirname and returns
+// a duplicate filename.
 func GetDuplicate(dirname string) ([][]string, error) {
 	list, err := ReadDir(dirname)
 	if err != nil {
