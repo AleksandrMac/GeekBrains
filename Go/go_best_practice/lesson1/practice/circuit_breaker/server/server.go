@@ -2,9 +2,11 @@ package main
 
 import (
 	"bufio"
+	"context"
 	"log"
 	"net"
 	"strings"
+	"time"
 )
 
 func main() {
@@ -30,17 +32,34 @@ func waitNewSingleClient(listener net.Listener) error {
 	defer conn.Close()
 	log.Print("accept new client connect")
 	for {
-		// Слушаем сообщения разделённые \n
-		message, err := bufio.NewReader(conn).ReadString('\n')
-		if err != nil {
+
+		ctx, cancelFunc := context.WithTimeout(context.Background(), time.Minute)
+		defer cancelFunc()
+		doneCh := make(chan error)
+		messageCh := make(chan string)
+
+		go func(ctx context.Context) {
+			// Слушаем сообщения разделённые \n, с таймаутом в 1 минуту
+			message, err := bufio.NewReader(conn).ReadString('\n')
+			if err != nil {
+				doneCh <- err
+			}
+			messageCh <- message
+		}(ctx)
+
+		select {
+		case <-ctx.Done():
+			return ctx.Err()
+		case err = <-doneCh:
 			return err
-		}
-		log.Printf("new message received: %s", message)
-		// Выполняем обработку сообщения
-		responseMessage := strings.ToUpper(message)
-		// Возвращаем клиенту обработанное сообщение
-		if _, err := conn.Write([]byte(responseMessage + "\n")); err != nil {
-			return err
+		case message := <-messageCh:
+			log.Printf("new message received: %s", message)
+			// Выполняем обработку сообщения
+			responseMessage := strings.ToUpper(message)
+			// Возвращаем клиенту обработанное сообщение
+			if _, err := conn.Write([]byte(responseMessage + "\n")); err != nil {
+				return err
+			}
 		}
 	}
 }
