@@ -29,7 +29,7 @@ var (
 // Как вы помните, функция инициализации стартует первой
 func init() {
 	// задаём и парсим флаги
-	flag.StringVar(&url, "url", "", "url address")
+	flag.StringVar(&url, "url", "https://en.wikipedia.org/wiki/Lionel_Messi", "url address")
 	flag.IntVar(&depthLimit, "depth", 3, "max depth for run")
 	flag.Parse()
 
@@ -49,12 +49,22 @@ func main() {
 	defer cancel()
 
 	crawler := newCrawler(depthLimit)
+	go func() {
+		for {
+			userSignalChan := make(chan os.Signal, 1)
+			signal.Notify(userSignalChan, syscall.SIGUSR1)
+			<-userSignalChan
+			crawler.addMaxDepth(10)
+			log.Println("maxDepth  ", crawler.maxDepth)
+		}
+	}()
 
 	// создаём канал для результатов
 	results := make(chan crawlResult)
 
+	ctxTimeOut, _ := context.WithTimeout(ctx, 10*time.Second)
 	// запускаем горутину для чтения из каналов
-	done := watchCrawler(ctx, results, errorsLimit, resultsLimit)
+	done := watchCrawler(ctxTimeOut, results, errorsLimit, resultsLimit)
 
 	// запуск основной логики
 	// внутри есть рекурсивные запуски анализа в других горутинах
@@ -68,12 +78,11 @@ func main() {
 
 // ловим сигналы выключения
 func watchSignals(cancel context.CancelFunc) {
-	osSignalChan := make(chan os.Signal)
+	osSignalChan := make(chan os.Signal, 2)
 
 	signal.Notify(osSignalChan,
 		syscall.SIGINT,
 		syscall.SIGTERM)
-
 	sig := <-osSignalChan
 	log.Printf("got signal %q", sig.String())
 

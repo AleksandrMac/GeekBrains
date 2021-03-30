@@ -85,3 +85,7 @@ func (c *crawler) checkVisited(url string) bool {
 	_, ok := c.visited[url]
 	return ok
 }
+
+func (c *crawler) addMaxDepth(num int) {
+	c.maxDepth += num
+}
