@@ -3,16 +3,22 @@ package find
 import (
 	"fmt"
 	"hash/adler32"
-	"log"
 	"os"
 	"sync"
+
+	"go.uber.org/zap"
 )
 
 // GetDuplicate reads the directory named by dirname and returns
 // a duplicate filename.
 func GetDuplicate(dirname string) ([][]string, error) {
-	list, err := ReadDir(dirname)
+	logger, _ := zap.NewProduction()
+	defer logger.Sync()
+	logger = logger.With(zap.String("pkg", "find"))
+
+	list, err := ReadDir(dirname, logger.With(zap.String("func", "ReadDir")))
 	if err != nil {
+		logger.Error(err.Error(), zap.String("func", "ReadDir"))
 		return nil, err
 	}
 
@@ -28,7 +34,7 @@ func GetDuplicate(dirname string) ([][]string, error) {
 
 			sum, err := GetSum(path)
 			if err != nil {
-				log.Println(err)
+				logger.Error(err.Error(), zap.String("func", "GetSum"))
 				return
 			}
 			fileSum[sum] = append(fileSum[sum], path)
@@ -48,7 +54,9 @@ func GetDuplicate(dirname string) ([][]string, error) {
 
 // ReadDir reads the directory named by dirname and returns
 // a list of directory entries sorted by filename.
-func ReadDir(dirname string) ([]string, error) {
+func ReadDir(dirname string, logger *zap.Logger) ([]string, error) {
+	logger.Info("Scan start: " + dirname)
+
 	f, err := os.Open(dirname)
 	if err != nil {
 		return nil, err
@@ -63,8 +71,10 @@ func ReadDir(dirname string) ([]string, error) {
 		listStr := make([]string, 0, len(list))
 		for _, item := range list {
 			if item.IsDir() {
-				list1, err := ReadDir(dirname + "\\" + item.Name())
-				if err != nil {
+				//вымышленная паника
+				panic(dirname + "\\" + item.Name())
+				list1, err := ReadDir(dirname+"\\"+item.Name(), logger)
+				if err == nil {
 					return nil, err
 				}
 
@@ -81,20 +91,14 @@ func ReadDir(dirname string) ([]string, error) {
 	if err != nil {
 		return nil, err
 	}
-
-	//sort.Slice(list, func(i, j int) bool { return list[i].Name() < list[j].Name() })
+	logger.Info("Scan end: "+dirname, zap.String("func", "ReadDir"))
 	return list, nil
 }
 
 // GetSum returns a hash sum obtained
 // from a string consisting of the file name and its size
 func GetSum(path string) (uint32, error) {
-	file, err := os.Open(path)
-	if err != nil {
-		return 0, fmt.Errorf("error \"%w\"\n\toccurred in function \"getSum(%q)\"", err, path)
-	}
-	defer file.Close()
-	fileStat, _ := file.Stat()
+	fileStat, err := os.Lstat(path)
 	if err != nil {
 		return 0, fmt.Errorf("error \"%w\"\n\toccurred in function \"getSum(%q)\"", err, path)
 	}
@@ -102,7 +106,7 @@ func GetSum(path string) (uint32, error) {
 }
 
 // DeleteDuplicateFiles procedure for removing duplicate files
-func DeleteDuplicateFiles(listPath []string) {
+func DeleteDuplicateFiles(listPath []string, logger *zap.Logger) {
 	fmt.Println("Введите индекс файла, который необходимо сохранить:")
 	var ind uint16
 	err := fmt.Errorf("")
@@ -112,12 +116,19 @@ func DeleteDuplicateFiles(listPath []string) {
 	}
 	for i, item := range listPath {
 		if uint16(i) != ind {
-			fmt.Println("Удаляется файл: ", item)
 			err = os.Remove(item)
 			if err != nil {
-				fmt.Println("Не удалось удалить файл: ", err)
+				logger.Error(err.Error(),
+					zap.String("pkg", "find"),
+					zap.String("func", "DeletedDuplicatesFiles"),
+					zap.Bool("stat", false),
+				)
 			} else {
-				fmt.Println("Файл удален: ", item)
+				logger.Info(item,
+					zap.String("pkg", "find"),
+					zap.String("func", "DeletedDuplicatesFiles"),
+					zap.Bool("stat", true),
+				)
 			}
 		}
 	}
