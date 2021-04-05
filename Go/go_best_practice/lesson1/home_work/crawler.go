@@ -87,5 +87,7 @@ func (c *crawler) checkVisited(url string) bool {
 }
 
 func (c *crawler) addMaxDepth(num int) {
+	c.Lock()
+	defer c.Unlock()
 	c.maxDepth += num
 }
