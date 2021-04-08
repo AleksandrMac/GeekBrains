@@ -71,8 +71,6 @@ func ReadDir(dirname string, logger *zap.Logger) ([]string, error) {
 		listStr := make([]string, 0, len(list))
 		for _, item := range list {
 			if item.IsDir() {
-				//вымышленная паника
-				panic(dirname + "\\" + item.Name())
 				list1, err := ReadDir(dirname+"\\"+item.Name(), logger)
 				if err == nil {
 					return nil, err
