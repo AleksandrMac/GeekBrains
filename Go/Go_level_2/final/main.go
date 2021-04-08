@@ -3,6 +3,7 @@ package main
 import (
 	"flag"
 	"fmt"
+	"strings"
 
 	"github.com/AleksandrMac/GeekBrains/Go/Go_level_2/final/find"
 	"go.uber.org/zap"
@@ -39,7 +40,14 @@ func main() {
 				fmt.Printf(" \t%d) %q\n", i, it)
 			}
 			if *delete {
-				find.DeleteDuplicateFiles(listPath, logger)
+				list, err := find.DeleteDuplicateFiles(listPath)
+				loggerDel := logger.With(zap.String("func", "DeleteDuplicateFiles"))
+				if err != nil {
+					loggerDel.Error(err.Error())
+				}
+				if len(list) > 0 {
+					loggerDel.Info(strings.Join(list, ","))
+				}
 			}
 		}
 	}

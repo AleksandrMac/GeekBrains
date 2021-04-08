@@ -16,7 +16,7 @@ func GetDuplicate(dirname string) ([][]string, error) {
 	defer logger.Sync()
 	logger = logger.With(zap.String("pkg", "find"))
 
-	list, err := ReadDir(dirname, logger.With(zap.String("func", "ReadDir")))
+	list, err := ReadDir(dirname)
 	if err != nil {
 		logger.Error(err.Error(), zap.String("func", "ReadDir"))
 		return nil, err
@@ -54,9 +54,7 @@ func GetDuplicate(dirname string) ([][]string, error) {
 
 // ReadDir reads the directory named by dirname and returns
 // a list of directory entries sorted by filename.
-func ReadDir(dirname string, logger *zap.Logger) ([]string, error) {
-	logger.Info("Scan start: " + dirname)
-
+func ReadDir(dirname string) ([]string, error) {
 	f, err := os.Open(dirname)
 	if err != nil {
 		return nil, err
@@ -71,7 +69,7 @@ func ReadDir(dirname string, logger *zap.Logger) ([]string, error) {
 		listStr := make([]string, 0, len(list))
 		for _, item := range list {
 			if item.IsDir() {
-				list1, err := ReadDir(dirname+"\\"+item.Name(), logger)
+				list1, err := ReadDir(dirname + "\\" + item.Name())
 				if err == nil {
 					return nil, err
 				}
@@ -89,7 +87,6 @@ func ReadDir(dirname string, logger *zap.Logger) ([]string, error) {
 	if err != nil {
 		return nil, err
 	}
-	logger.Info("Scan end: "+dirname, zap.String("func", "ReadDir"))
 	return list, nil
 }
 
@@ -104,30 +101,22 @@ func GetSum(path string) (uint32, error) {
 }
 
 // DeleteDuplicateFiles procedure for removing duplicate files
-func DeleteDuplicateFiles(listPath []string, logger *zap.Logger) {
-	fmt.Println("Введите индекс файла, который необходимо сохранить:")
+func DeleteDuplicateFiles(listPath []string) (deletedFiles []string, err error) {
 	var ind uint16
-	err := fmt.Errorf("")
 	for err != nil {
 		fmt.Println("Введите целое число >= 0")
 		_, err = fmt.Fscan(os.Stdin, &ind)
 	}
+	err = fmt.Errorf("")
 	for i, item := range listPath {
 		if uint16(i) != ind {
-			err = os.Remove(item)
-			if err != nil {
-				logger.Error(err.Error(),
-					zap.String("pkg", "find"),
-					zap.String("func", "DeletedDuplicatesFiles"),
-					zap.Bool("stat", false),
-				)
+			err_inside := os.Remove(item)
+			if err_inside != nil {
+				err = fmt.Errorf(", %w%s", err_inside, err)
 			} else {
-				logger.Info(item,
-					zap.String("pkg", "find"),
-					zap.String("func", "DeletedDuplicatesFiles"),
-					zap.Bool("stat", true),
-				)
+				deletedFiles = append(deletedFiles, item)
 			}
 		}
 	}
+	return
 }
