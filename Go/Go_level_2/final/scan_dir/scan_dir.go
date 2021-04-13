@@ -56,7 +56,6 @@ func (f *ScanDir) FindDuplicate(fileList []string) map[uint32][]string {
 			result[key] = list
 		}
 	}
-	fmt.Println(result)
 	return result
 }
 
