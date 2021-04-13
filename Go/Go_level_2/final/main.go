@@ -46,12 +46,12 @@ func main() {
 	}
 
 	fmt.Println("Найдены дублирующиеся файлы.")
-	for key, _ := range duplicateList {
-		for i, it := range duplicateList[key] {
+	for _, val := range duplicateList {
+		for i, it := range val {
 			fmt.Printf(" \t%d) %q\n", i, it)
 		}
 		if *delete {
-			list, err := sd.DeleteDuplicateFiles(duplicateList[key])
+			list, err := sd.DeleteDuplicateFiles(val)
 
 			loggerDel := logger.With(zap.String("func", "DeleteDuplicateFiles"))
 			if err != nil {
