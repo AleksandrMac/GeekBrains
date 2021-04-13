@@ -1,3 +1,4 @@
+// +build unit
 package scan_dir
 
 import (
@@ -8,13 +9,12 @@ import (
 	"go.uber.org/zap"
 )
 
-type FindTestSuite struct {
+type ScanDirTestSuite struct {
 	suite.Suite
 	sd *ScanDir
-	//FS afero.Fs
 }
 
-func (fs *FindTestSuite) SetupTest() {
+func (fs *ScanDirTestSuite) SetupTest() {
 	f := afero.NewMemMapFs()
 
 	f.Mkdir("test", 0644)
@@ -80,7 +80,7 @@ func (fs *FindTestSuite) SetupTest() {
 	fs.sd = NewScanDir(f, logger.With(zap.String("pkg", "test_scan")))
 }
 
-func (fs *FindTestSuite) TestScanDir() {
+func (fs *ScanDirTestSuite) TestScanDir() {
 	want := []string{
 		"test\\file1.txt",
 		"test\\test_data\\file2.txt",
@@ -95,7 +95,7 @@ func (fs *FindTestSuite) TestScanDir() {
 	fs.Assert().Equal(want, list)
 }
 
-func (fs *FindTestSuite) TestFindDuplicate() {
+func (fs *ScanDirTestSuite) TestFindDuplicate() {
 	var (
 		fileList      []string
 		duplicateList map[uint32][]string
@@ -124,32 +124,6 @@ func (fs *FindTestSuite) TestFindDuplicate() {
 		fs.Assert().ElementsMatch(want[key], val)
 	}
 }
-func TestFindTestSuite(t *testing.T) {
-	suite.Run(t, new(FindTestSuite))
+func TestScanDirTestSuite(t *testing.T) {
+	suite.Run(t, new(ScanDirTestSuite))
 }
-
-// func TestGetDuplicate(t *testing.T) {
-// 	appFS := afero.NewMemMapFs()
-// 	appFS.Open(".")
-// 	want := [][]string{{
-// 		"..\\test\\test_data\\\\testDir\\file2.txt",
-// 		"..\\test\\test_data\\\\testDir\\dir2\\file2.txt",
-// 		"..\\test\\test_data\\\\testDir\\dir1\\file2.txt",
-// 	}}
-// 	got, _ := GetDuplicate("..\\test\\test_data\\")
-// 	if !reflect.DeepEqual(got, want) {
-// 		t.Errorf("GetDuplicate(\".\\test\\test_data\\\" = %q; want %q", got, want)
-// 	}
-// }
-
-// func ExampleReadDir() {
-// 	//fmt.Println(ReadDir(".."))
-// 	// Output: [.\\test\\test_data\\testDir\\file2.txt .\\test\\test_data\\testDir\\file2.txt] nil
-// }
-// [test\test_data\file2.txt test\test_data\testDir\file2.txt test\test_data\testDir\dir1\file2.txt test\test_data\testDir\dir2\file2.txt] appears more times in
-// [
-// [test\test_data\file2.txt test\test_data\testDir\file2.txt test\test_data\testDir\dir1\file2.txt test\test_data\testDir\dir2\file2.txt]
-// [test\test_data\testDir\dir1\file1.txt test\test_data\testDir\dir2\file1.txt test\file1.txt]] than in
-// [
-// [test\file1.txt test\test_data\testDir\dir2\file1.txt test\test_data\testDir\dir1\file1.txt]
-// [test\test_data\testDir\file2.txt test\test_data\testDir\dir1\file2.txt test\test_data\testDir\dir2\file2.txt test\test_data\file2.txt]]
