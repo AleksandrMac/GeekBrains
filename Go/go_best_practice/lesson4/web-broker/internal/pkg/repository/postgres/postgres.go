@@ -1,19 +1,13 @@
 package postgres
 
-import "github.com/vlslav/web-broker/internal/pkg/model"
+import (
+	"github.com/vlslav/web-broker/internal/pkg/repository/postgres/alex"
+)
 
-type PgRepo struct{}
+type PgRepo struct {
+	alex.Req
+}
 
 func New() *PgRepo {
 	return &PgRepo{}
-}
-
-func (pgr *PgRepo) Get(getReq string) (string, error) {
-	// TODO: impl
-	return "", nil
-}
-
-func (pgr *PgRepo) Put(putReq *model.PutValue) error {
-	// TODO: impl
-	return nil
 }
