@@ -1,0 +1,6 @@
+[Data]
+path = "data.csv"
+# type [bool, int, float, string, date]
+fields = [
+    {name = "first_name", type = "string"},
+    {name = "date", type = "date"}]
