@@ -1,4 +1,4 @@
-package scan_dir
+package scandir
 
 import (
 	"fmt"
@@ -16,9 +16,9 @@ type ScanDir struct {
 	Log *zap.Logger
 }
 
-func NewScanDir(fs afero.Fs, logger *zap.Logger) *ScanDir {
+func NewScanDir(afs afero.Fs, logger *zap.Logger) *ScanDir {
 	dir := new(ScanDir)
-	dir.FS = fs
+	dir.FS = afs
 	dir.Log = logger
 	return dir
 }
@@ -93,9 +93,8 @@ func (f *ScanDir) DeleteDuplicateFiles(listPath []string) (deletedFiles []string
 	err = fmt.Errorf("")
 	for i, item := range listPath {
 		if uint16(i) != ind {
-			err_inside := os.Remove(item)
-			if err_inside != nil {
-				err = fmt.Errorf(", %w%s", err_inside, err)
+			if errInside := os.Remove(item); errInside != nil {
+				err = fmt.Errorf(", %w%s", errInside, err)
 			} else {
 				deletedFiles = append(deletedFiles, item)
 			}

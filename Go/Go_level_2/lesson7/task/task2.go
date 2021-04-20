@@ -10,13 +10,14 @@ import (
 // Необходимо подсчитать в этой функции количество вызовов асинхронных функций.
 // Результат работы должен возвращать количество вызовов int и ошибку error.
 // Разрешается использовать только go/parser, go/ast и go/token.
-func Task2(fileName string, funcName string) (count int32, err error) {
+func Task2(fileName, funcName string) (int32, error) {
 	fset := token.NewFileSet()
 	// парсим файл, чтобы получить AST
 	astFile, err := parser.ParseFile(fset, fileName, nil, 0)
 	if err != nil {
-		return
+		return 0, nil
 	}
+	var count int32
 	for _, decl := range astFile.Decls {
 		funcDecl, ok := decl.(*ast.FuncDecl)
 		if !ok {
@@ -27,70 +28,63 @@ func Task2(fileName string, funcName string) (count int32, err error) {
 		if funcDecl.Name.String() == funcName {
 			count++
 		}
-
 	}
-	return
+	return count, nil
 }
 
 func funcNameFromStmt(stmt ast.Stmt, funcName string) (count int32) {
-	switch stmt.(type) {
+	switch v := stmt.(type) {
 	case *ast.BlockStmt:
-		for _, block := range stmt.(*ast.BlockStmt).List {
+		for _, block := range v.List {
 			count += funcNameFromStmt(block, funcName)
 		}
 	case *ast.ExprStmt:
-		count += funcNameFromExpr(stmt.(*ast.ExprStmt).X, funcName)
+		count += funcNameFromExpr(v.X, funcName)
 	case *ast.IfStmt:
-		count += funcNameFromExpr(stmt.(*ast.IfStmt).Cond, funcName)
-		count += funcNameFromStmt(stmt.(*ast.IfStmt).Body, funcName)
+		count += funcNameFromExpr(v.Cond, funcName)
+		count += funcNameFromStmt(v.Body, funcName)
 		if stmt.(*ast.IfStmt).Else != nil {
-			count += funcNameFromStmt(stmt.(*ast.IfStmt).Else, funcName)
+			count += funcNameFromStmt(v.Else, funcName)
 		}
 	case *ast.ForStmt:
-		count += funcNameFromStmt(stmt.(*ast.ForStmt).Init, funcName)
-		count += funcNameFromStmt(stmt.(*ast.ForStmt).Body, funcName)
-		count += funcNameFromExpr(stmt.(*ast.ForStmt).Cond, funcName)
+		count += funcNameFromStmt(v.Init, funcName)
+		count += funcNameFromStmt(v.Body, funcName)
+		count += funcNameFromExpr(v.Cond, funcName)
 	case *ast.AssignStmt:
-		for _, assign := range stmt.(*ast.AssignStmt).Rhs {
+		for _, assign := range v.Rhs {
 			count += funcNameFromExpr(assign, funcName)
 		}
 	case *ast.RangeStmt:
-		count += funcNameFromExpr(stmt.(*ast.RangeStmt).X, funcName)
-		count += funcNameFromStmt(stmt.(*ast.RangeStmt).Body, funcName)
+		count += funcNameFromExpr(v.X, funcName)
+		count += funcNameFromStmt(v.Body, funcName)
 	case *ast.ReturnStmt:
-		for _, ret := range stmt.(*ast.ReturnStmt).Results {
+		for _, ret := range v.Results {
 			count += funcNameFromExpr(ret, funcName)
 		}
 	}
-	return
+	return count
 }
 
 func funcNameFromExpr(e ast.Expr, funcName string) (count int32) {
-	switch e.(type) {
+	switch v := e.(type) {
 	case *ast.BinaryExpr:
-		t := e.(*ast.BinaryExpr)
-		count += funcNameFromExpr(t.X, funcName)
-		count += funcNameFromExpr(t.Y, funcName)
+		count += funcNameFromExpr(v.X, funcName)
+		count += funcNameFromExpr(v.Y, funcName)
 	case *ast.Ident:
-		t := e.(*ast.Ident)
-		if t.Name == funcName {
+		if v.Name == funcName {
 			count++
 		}
 	case *ast.CallExpr:
-		t := e.(*ast.CallExpr)
-		count += funcNameFromExpr(t.Fun, funcName)
-		for _, arg := range t.Args {
+		count += funcNameFromExpr(v.Fun, funcName)
+		for _, arg := range v.Args {
 			count += funcNameFromExpr(arg, funcName)
 		}
 	case *ast.SelectorExpr:
-		t := e.(*ast.SelectorExpr)
-		count += funcNameFromExpr(t.Sel, funcName)
+		count += funcNameFromExpr(v.Sel, funcName)
 	case *ast.BasicLit:
-		t := e.(*ast.BasicLit)
-		if t.Value == funcName {
+		if v.Value == funcName {
 			count++
 		}
 	}
-
-	return
+	return count
 }

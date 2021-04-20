@@ -1,2 +1,3 @@
 // +build integration
-package scan_dir
+
+package scandir

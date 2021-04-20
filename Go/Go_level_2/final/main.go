@@ -3,46 +3,47 @@ package main
 import (
 	"flag"
 	"fmt"
-	"os"
 	"strings"
 
-	"github.com/AleksandrMac/GeekBrains/Go/Go_level_2/final/scan_dir"
+	"github.com/AleksandrMac/GeekBrains/Go/Go_level_2/final/scandir"
 	"github.com/spf13/afero"
 	"go.uber.org/zap"
 )
 
-var (
-	delete *bool
-	dir    *string
-)
-
-func init() {
-	delete = flag.Bool("delete", true, "used to remove duplicate files")
-	dir = flag.String("dir", "..\\final\\test", "directory to scan")
-	flag.Parse()
-}
-
 func main() {
 	var (
+		del           *bool
+		dir           *string
 		fileList      []string
 		duplicateList map[uint32][]string
 		err           error
 	)
-	logger, _ := zap.NewProduction()
-	defer logger.Sync()
 
-	sd := scan_dir.NewScanDir(afero.NewOsFs(), logger.With(zap.String("pkg", "scan_dir")))
+	del = flag.Bool("delete", true, "used to remove duplicate files")
+	dir = flag.String("dir", "..\\final\\test", "directory to scan")
+	flag.Parse()
+
+	logger, _ := zap.NewProduction()
+	defer func() {
+		err = logger.Sync()
+		if err != nil {
+			fmt.Println(err.Error())
+			return
+		}
+	}()
+
+	sd := scandir.NewScanDir(afero.NewOsFs(), logger.With(zap.String("pkg", "scan_dir")))
 
 	fileList, err = sd.ScanDir(*dir)
 	if err != nil {
 		sd.Log.Error(err.Error())
-		os.Exit(1)
+		return
 	}
 	duplicateList = sd.FindDuplicate(fileList)
 
 	if duplicateList == nil {
 		fmt.Println("Дублирующиеся файлы не найдены.")
-		os.Exit(0)
+		return
 	}
 
 	fmt.Println("Найдены дублирующиеся файлы.")
@@ -50,7 +51,7 @@ func main() {
 		for i, it := range val {
 			fmt.Printf(" \t%d) %q\n", i, it)
 		}
-		if *delete {
+		if *del {
 			list, err := sd.DeleteDuplicateFiles(val)
 
 			loggerDel := logger.With(zap.String("func", "DeleteDuplicateFiles"))
