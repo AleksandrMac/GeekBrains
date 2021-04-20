@@ -1,6 +1,9 @@
-[Data]
-path = "data.csv"
+sep = ","
+
+[Head]
+path = "data/owid-covid-data.csv"
 # type [bool, int, float, string, date]
-fields = [
-    {name = "first_name", type = "string"},
-    {name = "date", type = "date"}]
+# fields = [
+#    {name = "first_name", type = "string"},
+#   {name = "date", type = "date"}
+#   ]
