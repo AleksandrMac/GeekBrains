@@ -3,6 +3,7 @@ package main
 
 import (
 	"bufio"
+	"flag"
 	"fmt"
 	"log"
 	"os"
@@ -22,9 +23,17 @@ type Config struct {
 var (
 	config    Config
 	GitCommit string
+	query     *string
 )
 
 func main() {
+
+	_, r := csv.Split("(continent='Asia' AND (date>'2020-04-14' AND date < '2020-04-20') OR (continent='Africa' AND '2020-04-14' != date))")
+	_ = r
+
+	query = flag.String("query", "", "Use example --query=\"continent='Asia' AND date>'2020-04-14'\"")
+	flag.Parse()
+
 	fs := afero.NewOsFs()
 	buf, err := afero.ReadFile(fs, "config.toml")
 	if err != nil {
@@ -74,12 +83,13 @@ func main() {
 		}
 	}
 
+	fmt.Println(*query)
 	for err == nil {
 		var str []byte
 		str, _, err = reader.ReadLine()
 		row := config.Head.NewRow()
 		row.Values = strings.Split(string(str), config.Sep)
-		if row.IsMatch("") {
+		if row.IsMatch(*query) {
 			fmt.Println(row.Values)
 		}
 	}
