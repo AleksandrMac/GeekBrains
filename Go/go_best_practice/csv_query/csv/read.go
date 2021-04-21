@@ -18,30 +18,47 @@ type Row struct {
 	Values []string
 }
 
-type operation string
+// type operation string
 
-const (
-	less    operation = "<"
-	great   operation = ">"
-	lessEq  operation = "<="
-	greatEq operation = ">="
-	equal   operation = "="
-	notEq   operation = "!="
-	open    operation = "("
-	close   operation = ")"
-)
+// const (
+// 	less    operation = "<"
+// 	great   operation = ">"
+// 	lessEq  operation = "<="
+// 	greatEq operation = ">="
+// 	equal   operation = "="
+// 	notEq   operation = "!="
+// 	open    operation = "("
+// 	close   operation = ")"
+// )
 
-var (
-	op  []operation
-	val []string
-)
+// var (
+// 	op  []string
+// 	val []string
+// )
 
 func (d *Row) IsMatch(match string) bool {
 	match = strings.TrimSpace(match)
 	match = strings.ToUpper(match)
+
+	op, val := GetItem(match)
 	return true
 }
-
+func GetItem(str string) (op, val []string) {
+	for left, right := str, ""; len(left) > 0; {
+		left, right = Split(left)
+		switch right[0] {
+		case '<', '>', '=', '!', '(', ')':
+			op = append(op, right)
+		default:
+			if right == "AND" || right == "OR" {
+				op = append(op, right)
+				continue
+			}
+			val = append(val, right)
+		}
+	}
+	return op, val
+}
 func Split(str string) (left, right string) {
 	inputBuffer := []byte(str)
 	outputBuffer := make([]byte, 0, len(inputBuffer))
