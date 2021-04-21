@@ -9,13 +9,17 @@ import (
 
 var where string = "(continent='Asia' AND (date>'2020-04-14' AND date < '2020-04-20') OR (continent='Africa' AND '2020-04-14' != date))"
 
-type expesion struct {
+type splitData struct {
 	Left, Right string
+}
+
+type getItemData struct {
+	Operation, Values []string
 }
 
 func TestSplit(t *testing.T) {
 	left, right := where, ""
-	want := []expesion{
+	want := []splitData{
 		{Left: "(continent='Asia' AND (date>'2020-04-14' AND date < '2020-04-20') OR (continent='Africa' AND '2020-04-14' != date)", Right: ")"},
 		{Left: "(continent='Asia' AND (date>'2020-04-14' AND date < '2020-04-20') OR (continent='Africa' AND '2020-04-14' != date", Right: ")"},
 		{Left: "(continent='Asia' AND (date>'2020-04-14' AND date < '2020-04-20') OR (continent='Africa' AND '2020-04-14' != ", Right: "date"},
@@ -44,7 +48,17 @@ func TestSplit(t *testing.T) {
 	}
 	for _, val := range want {
 		left, right = csv.Split(left)
-		got := expesion{Left: left, Right: right}
+		got := splitData{Left: left, Right: right}
 		assert.Equal(t, val, got, "they should be equal")
 	}
+}
+
+func TestGetItem(t *testing.T) {
+	want := getItemData{
+		Operation: []string{")", ")", "!=", "AND", "=", "(", "OR", ")", "<", "AND", ">", "(", "AND", "=", "("},
+		Values:    []string{"date", "'2020-04-14'", "'Africa'", "continent", "'2020-04-20'", "date", "'2020-04-14'", "date", "'Asia'", "continent"},
+	}
+	got := getItemData{}
+	got.Operation, got.Values = csv.GetItem(where)
+	assert.Equal(t, want, got, "func \"TestGetItem\": they should be equal")
 }
