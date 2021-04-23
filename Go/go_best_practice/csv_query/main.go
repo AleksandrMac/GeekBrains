@@ -27,10 +27,6 @@ var (
 )
 
 func main() {
-
-	_, r := csv.Split("(continent='Asia' AND (date>'2020-04-14' AND date < '2020-04-20') OR (continent='Africa' AND '2020-04-14' != date))")
-	_ = r
-
 	query = flag.String("query", "", "Use example --query=\"continent='Asia' AND date>'2020-04-14'\"")
 	flag.Parse()
 
@@ -68,8 +64,8 @@ func main() {
 			`В config.toml не найдена информация о названиях полей.\n
 Использовать первую строку в файле %s для инициализации полей?\n
 Нажмите Y(да)/N(нет, завершить)\n`, config.Head.Path)
-		var answer string
-		fmt.Scan(&answer)
+		var answer string = "y"
+		//fmt.Scan(&answer)
 		switch answer {
 		case "Y", "y":
 
@@ -87,10 +83,12 @@ func main() {
 	for err == nil {
 		var str []byte
 		str, _, err = reader.ReadLine()
-		row := config.Head.NewRow()
-		row.Values = strings.Split(string(str), config.Sep)
-		if row.IsMatch(*query) {
-			fmt.Println(row.Values)
+		if len(str) > 0 {
+			row := config.Head.NewRow()
+			row.Values = strings.Split(string(str), config.Sep)
+			if row.IsMatch(*query) {
+				fmt.Println(row.Values)
+			}
 		}
 	}
 }

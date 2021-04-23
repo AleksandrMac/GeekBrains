@@ -1,7 +1,10 @@
 // csv
 package csv
 
-import "strings"
+import (
+	"fmt"
+	"strings"
+)
 
 type Head struct {
 	Path   string
@@ -37,23 +40,138 @@ type Row struct {
 // )
 
 func (d *Row) IsMatch(match string) bool {
+	if match == "" {
+		return true
+	}
 	match = strings.TrimSpace(match)
 	match = strings.ToUpper(match)
 
 	lexInfix := GetLex(match)
-	InfixToPostfix(lexInfix)
+	ReplaceFieldsToValues(lexInfix, d)
+	lexPostfix := InfixToPostfix(lexInfix)
+	result, err := GetBoolResult(lexPostfix)
 
-	// for lop, lval := len(op), len(val); lop > 0 && lval > 0; {
-	// 	// o := op[lop-1]
-	// 	// leftExp, rightExp := "", ""
+	if err != nil {
+		panic(err)
+	}
+	return result
+}
 
-	// }
-	return true
+func GetBoolResult(postfix []string) (bool, error) {
+	stack := make([]string, 0, len(postfix))
+	for _, val := range postfix {
+		l := len(stack)
+		var str1, str2 string
+		if l > 0 {
+			str1 = stack[l-1]
+		}
+		if l > 1 {
+			str2 = stack[l-2]
+		}
+		switch val {
+		case "!", "NOT":
+			switch str1 {
+			case "1":
+				stack[l-1] = "0"
+			case "0":
+				stack[l-1] = "1"
+			default:
+				return false, fmt.Errorf("expected '0' or '1', actual: %s", str1)
+			}
+			stack = stack[:l]
+		case "OR":
+			stack = stack[:l-2]
+
+			if str1 == "1" || str2 == "1" {
+				stack = append(stack, "1")
+				continue
+			} else if str1 != "0" && str1 != "1" {
+				return false, fmt.Errorf("expected '0' or '1', actual: %s", str1)
+			} else if str2 != "0" && str2 != "1" {
+				return false, fmt.Errorf("expected '0' or '1', actual: %s", str2)
+			}
+			stack = append(stack, "0")
+		case "AND":
+			stack = stack[:l-2]
+
+			if str1 == "1" && str2 == "1" {
+				stack = append(stack, "1")
+				continue
+			} else if str1 != "0" && str1 != "1" {
+				return false, fmt.Errorf("expected '0' or '1', actual: %s", str1)
+			} else if str2 != "0" && str2 != "1" {
+				return false, fmt.Errorf("expected '0' or '1', actual: %s", str2)
+			}
+			stack = append(stack, "0")
+		case "<":
+			stack = stack[:l-2]
+			if str1 > str2 {
+				stack = append(stack, "1")
+				continue
+			}
+			stack = append(stack, "0")
+		case ">":
+			stack = stack[:l-2]
+			if str1 < str2 {
+				stack = append(stack, "1")
+				continue
+			}
+			stack = append(stack, "0")
+
+		case ">=":
+			stack = stack[:l-2]
+			if str1 <= str2 {
+				stack = append(stack, "1")
+				continue
+			}
+			stack = append(stack, "0")
+
+		case "<=":
+			stack = stack[:l-2]
+			if str1 >= str2 {
+				stack = append(stack, "1")
+				continue
+			}
+			stack = append(stack, "0")
+
+		case "<>", "!=":
+			stack = stack[:l-2]
+			if str1 != str2 {
+				stack = append(stack, "1")
+				continue
+			}
+			stack = append(stack, "0")
+		case "=":
+			stack = stack[:l-2]
+			if str1 == str2 {
+				stack = append(stack, "1")
+				continue
+			}
+			stack = append(stack, "0")
+		default:
+			stack = append(stack, val)
+			//case "*", "DIV", "MOD"
+		}
+	}
+	if stack[0] == "1" {
+		return true, nil
+	}
+	return false, nil
+}
+
+func (d *Row) GetValue(field string) (string, error) {
+	for i, val := range d.Fields {
+		if val == field {
+			return d.Values[i], nil
+		}
+	}
+	return "", fmt.Errorf("field: %s is not found", field)
 }
 
 func InfixToPostfix(infix []string) (postfix []string) {
 	stack := make([]string, 0, len(infix))
 	for _, val := range infix {
+		val = strings.ToUpper(val)
 		switch val {
 		case "(":
 			stack = append(stack, val)
@@ -64,8 +182,7 @@ func InfixToPostfix(infix []string) (postfix []string) {
 			}
 			stack = stack[:i]
 		case "+", "-", "!", "NOT", "/", "*", "DIV", "MOD", "AND", "OR", "<", ">", "<=", ">=", "<>", "!=", "=":
-			//i := len(stack) - 1
-			for i := len(stack) - 1; GetPriority(stack[i]) >= GetPriority(val) && i >= 0; i = len(stack) - 1 {
+			for i := len(stack) - 1; i >= 0 && GetPriority(stack[i]) >= GetPriority(val); i = len(stack) - 1 {
 				postfix = append(postfix, stack[i])
 				stack = stack[:i]
 			}
@@ -74,9 +191,28 @@ func InfixToPostfix(infix []string) (postfix []string) {
 			postfix = append(postfix, val)
 		}
 	}
+	for i := len(stack) - 1; i >= 0; i-- {
+		postfix = append(postfix, stack[i])
+	}
+
 	return postfix
 }
 
+func ReplaceFieldsToValues(lex []string, row *Row) {
+	for i, val := range lex {
+		switch val {
+		case "(", ")", "+", "-", "!", "NOT", "/", "*", "DIV", "MOD", "AND", "OR", "<", ">", "<=", ">=", "<>", "!=", "=":
+			continue
+		default:
+			for j, field := range row.Fields {
+				if val == field {
+					lex[i] = "'" + row.Values[j] + "'"
+					break
+				}
+			}
+		}
+	}
+}
 func GetPriority(operator string) uint8 {
 	operator = strings.ToUpper(operator)
 	switch operator {
@@ -100,22 +236,6 @@ func GetLex(str string) (lex []string) {
 		lex = append(lex, left)
 	}
 	return lex
-}
-func GetItem(str string) (op, val []string) {
-	for left, right := str, ""; len(left) > 0; {
-		left, right = Split(left)
-		switch right[0] {
-		case '<', '>', '=', '!', '(', ')':
-			op = append(op, right)
-		default:
-			if right == "AND" || right == "OR" {
-				op = append(op, right)
-				continue
-			}
-			val = append(val, right)
-		}
-	}
-	return op, val
 }
 
 func Split(str string) (left, right string) {
@@ -225,6 +345,7 @@ func reverse(str []byte) []byte {
 }
 
 func GetFields(row, sep string) []string {
+	row = strings.ToUpper(row)
 	if sep == "" {
 		sep = ","
 	}
@@ -234,15 +355,3 @@ func GetFields(row, sep string) []string {
 func (h *Head) NewRow() *Row {
 	return &Row{Head: h}
 }
-
-// var stack []string
-
-// stack = append(stack, "world!") // Push
-// stack = append(stack, "Hello ")
-
-// for len(stack) > 0 {
-//     n := len(stack) - 1 // Top element
-//     fmt.Print(stack[n])
-
-//     stack = stack[:n] // Pop
-// }
