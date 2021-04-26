@@ -4,11 +4,14 @@ package csv
 import (
 	"fmt"
 	"strings"
+
+	"go.uber.org/zap"
 )
 
 type Head struct {
 	Path   string
 	Fields []string
+	Log    *zap.Logger
 }
 
 type Body struct {
@@ -20,24 +23,6 @@ type Row struct {
 	*Head
 	Values []string
 }
-
-// type operation string
-
-// const (
-// 	less    operation = "<"
-// 	great   operation = ">"
-// 	lessEq  operation = "<="
-// 	greatEq operation = ">="
-// 	equal   operation = "="
-// 	notEq   operation = "!="
-// 	open    operation = "("
-// 	close   operation = ")"
-// )
-
-// var (
-// 	op  []string
-// 	val []string
-// )
 
 func (d *Row) IsMatch(match string) bool {
 	if match == "" {
@@ -52,7 +37,7 @@ func (d *Row) IsMatch(match string) bool {
 	result, err := GetBoolResult(lexPostfix)
 
 	if err != nil {
-		panic(err)
+		d.Log.Error(err.Error())
 	}
 	return result
 }
@@ -159,14 +144,14 @@ func GetBoolResult(postfix []string) (bool, error) {
 	return false, nil
 }
 
-func (d *Row) GetValue(field string) (string, error) {
-	for i, val := range d.Fields {
-		if val == field {
-			return d.Values[i], nil
-		}
-	}
-	return "", fmt.Errorf("field: %s is not found", field)
-}
+// func (d *Row) GetValue(field string) (string, error) {
+// 	for i, val := range d.Fields {
+// 		if val == field {
+// 			return d.Values[i], nil
+// 		}
+// 	}
+// 	return "", fmt.Errorf("field: %s is not found", field)
+// }
 
 func InfixToPostfix(infix []string) (postfix []string) {
 	stack := make([]string, 0, len(infix))

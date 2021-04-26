@@ -6,7 +6,6 @@ import (
 
 	"github.com/AleksandrMac/GeekBrains/Go/go_best_practice/csv_query/csv"
 	"github.com/stretchr/testify/assert"
-	"github.com/stretchr/testify/require"
 )
 
 var (
@@ -102,39 +101,39 @@ func TestGetFields(t *testing.T) {
 	assert.Equal(t, want, got, "func \"TestGetItem\": they should be equal")
 }
 
-func TestGetValue(t *testing.T) {
-	type values struct {
-		continent, date string
-	}
-	want := []values{
-		{continent: "Asia", date: "2020-02-24"},
-		{continent: "Asia", date: "2020-02-25"},
-		{continent: "Asia", date: "2020-02-26"},
-		{continent: "Asia", date: "2020-02-27"},
-		{continent: "Asia", date: "2020-02-28"},
-		{continent: "Asia", date: "2020-02-29"},
-		{continent: "Asia", date: "2020-03-01"},
-		{continent: "Asia", date: "2020-03-02"},
-		{continent: "Asia", date: "2020-03-03"},
-		{continent: "Asia", date: "2020-03-04"},
-		{continent: "Asia", date: "2020-03-05"},
-		{continent: "Asia", date: "2020-03-06"},
-	}
-	head := csv.Head{}
-	head.Fields = csv.GetFields(firstRow, ",")
-	row := head.NewRow()
-	rowsStr := strings.Split(data, "\n")
-	for i, val := range rowsStr {
-		row.Values = strings.Split(val, ",")
-		got, err := row.GetValue("CONTINENT")
-		require.Nil(t, err)
-		assert.Equal(t, want[i].continent, got, "they should be equal")
+// func TestGetValue(t *testing.T) {
+// 	type values struct {
+// 		continent, date string
+// 	}
+// 	want := []values{
+// 		{continent: "Asia", date: "2020-02-24"},
+// 		{continent: "Asia", date: "2020-02-25"},
+// 		{continent: "Asia", date: "2020-02-26"},
+// 		{continent: "Asia", date: "2020-02-27"},
+// 		{continent: "Asia", date: "2020-02-28"},
+// 		{continent: "Asia", date: "2020-02-29"},
+// 		{continent: "Asia", date: "2020-03-01"},
+// 		{continent: "Asia", date: "2020-03-02"},
+// 		{continent: "Asia", date: "2020-03-03"},
+// 		{continent: "Asia", date: "2020-03-04"},
+// 		{continent: "Asia", date: "2020-03-05"},
+// 		{continent: "Asia", date: "2020-03-06"},
+// 	}
+// 	head := csv.Head{}
+// 	head.Fields = csv.GetFields(firstRow, ",")
+// 	row := head.NewRow()
+// 	rowsStr := strings.Split(data, "\n")
+// 	for i, val := range rowsStr {
+// 		row.Values = strings.Split(val, ",")
+// 		got, err := row.GetValue("CONTINENT")
+// 		require.Nil(t, err)
+// 		assert.Equal(t, want[i].continent, got, "they should be equal")
 
-		got, err = row.GetValue("DATE")
-		require.Nil(t, err)
-		assert.Equal(t, want[i].date, got, "they should be equal")
-	}
-}
+// 		got, err = row.GetValue("DATE")
+// 		require.Nil(t, err)
+// 		assert.Equal(t, want[i].date, got, "they should be equal")
+// 	}
+// }
 
 func TestReplaceFieldsToValues(t *testing.T) {
 	lex := []string{"(", "CONTINENT", "=", "'Asia'", "AND", "(", "DATE", ">", "'2020-04-14'", "AND", "DATE", "<", "'2020-04-20'", ")", "OR", "(", "CONTINENT", "=", "'Africa'", "AND", "'2020-04-14'", "!=", "DATE", ")", ")"}
