@@ -44,8 +44,7 @@ func fileCreate(filename string) (err error) {
 func main() {
 	defer func() {
 		if v := recover(); v != nil {
-			var err error
-			err = New("recovered")
+			err := fmt.Errorf("recovered")
 			fmt.Printf("%v\n%v\n", err, v)
 		}
 	}()
@@ -53,6 +52,7 @@ func main() {
 	fmt.Println("outside", fileCreate("tratata.txt"))
 
 	var a int
+	// исскуственный вызов паники
+	//nolint
 	a = 1 / a
-
 }

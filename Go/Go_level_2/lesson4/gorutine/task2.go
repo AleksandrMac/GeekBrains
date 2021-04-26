@@ -9,15 +9,20 @@ import (
 	"time"
 )
 
+//nolint:gosimple
 // Task2 Написать программу, которая при получении в канал сигнала SIGTERM
 // останавливается не позднее, чем за одну секунду (установить таймаут).
 func Task2() {
-
 	var (
 		sys         = make(chan os.Signal)
 		ctx, cancel = context.WithCancel(context.Background())
-		hr          = func(ctx context.Context, cacancel context.CancelFunc) {
+		hr          = func(ctx context.Context, cancel context.CancelFunc) {
 			select {
+			case <-ctx.Done():
+				close(sys)
+				cancel()
+				fmt.Println("goes home")
+				return
 			case val := <-sys:
 				switch val {
 				case syscall.SIGTERM:
@@ -35,7 +40,7 @@ func Task2() {
 		}
 		jobs    = make(chan int)
 		manager = func(ctx context.Context) {
-			for job := 0; ; job += 1 {
+			for job := 0; ; job++ {
 				select {
 				case <-ctx.Done():
 					close(jobs)
@@ -47,8 +52,10 @@ func Task2() {
 				}
 			}
 		}
-		resource = make(chan struct{}, 10)
-		worker   = func(id int) {
+
+		chanSize uint32 = 10
+		resource        = make(chan struct{}, chanSize)
+		worker          = func(id int) {
 			defer func() { <-resource }()
 			for job := range jobs {
 				fmt.Printf("worker %d starts processing of %d\n", id, job)
@@ -62,14 +69,14 @@ func Task2() {
 	go manager(ctx)
 	go hr(ctx, cancel)
 
-	for i := 0; i < cap(resource); i += 1 {
+	for i := 0; i < cap(resource); i++ {
 		resource <- struct{}{}
 		go worker(i)
 	}
 
 	select {
 	case <-ctx.Done():
-		for i := 0; i < cap(resource); i += 1 {
+		for i := 0; i < cap(resource); i++ {
 			resource <- struct{}{}
 		}
 		close(resource)

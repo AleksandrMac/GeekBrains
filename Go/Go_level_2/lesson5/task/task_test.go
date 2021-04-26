@@ -11,6 +11,7 @@ type Procent struct {
 	write, read int
 }
 
+//nolint:dupl
 func BenchmarkTask3Mutex(b *testing.B) {
 	data := []Procent{
 		{write: 10, read: 90},
@@ -27,11 +28,11 @@ func BenchmarkTask3Mutex(b *testing.B) {
 					Task3Mutex(val.write, val.read)
 				}
 			})
-
 		})
 	}
 }
 
+//nolint:dupl
 func BenchmarkTask3RWMutex(b *testing.B) {
 	data := []Procent{
 		{write: 10, read: 90},

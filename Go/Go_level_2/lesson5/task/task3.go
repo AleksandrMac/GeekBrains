@@ -59,5 +59,4 @@ func Task3RWMutex(w, r int) {
 			_ = *count
 		}(&count, &lock)
 	}
-	//fmt.Println(count)
 }

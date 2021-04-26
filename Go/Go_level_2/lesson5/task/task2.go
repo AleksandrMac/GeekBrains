@@ -10,7 +10,6 @@ type counter uint64
 // Task2 -
 // Реализуйте функцию для разблокировки мьютекса с помощью defer
 func Task2() {
-
 	var count counter
 	wg := sync.WaitGroup{}
 	lock := sync.Mutex{}
@@ -28,7 +27,6 @@ func Task2() {
 	fmt.Println(count)
 }
 
-func (c *counter) add() counter {
+func (c *counter) add() {
 	*c += counter(1)
-	return *c
 }
