@@ -1,4 +1,3 @@
-// csv
 package csv
 
 import (
@@ -42,52 +41,39 @@ func (d *Row) IsMatch(match string) bool {
 	return result
 }
 
-func GetBoolResult(postfix []string) (bool, error) {
+//nolint
+func GetBoolResult(postfix []string) (res bool, err error) {
 	stack := make([]string, 0, len(postfix))
 	for _, val := range postfix {
 		l := len(stack)
-		var str1, str2 string
+		var str1, str2, result string
 		if l > 0 {
 			str1 = stack[l-1]
 		}
 		if l > 1 {
 			str2 = stack[l-2]
 		}
+
 		switch val {
 		case "!", "NOT":
-			switch str1 {
-			case "1":
-				stack[l-1] = "0"
-			case "0":
-				stack[l-1] = "1"
-			default:
-				return false, fmt.Errorf("expected '0' or '1', actual: %s", str1)
+			stack = stack[:l-2]
+			stack = append(stack, str2)
+			if result, err = not(str1); err != nil {
+				return false, err
 			}
-			stack = stack[:l]
+			stack = append(stack, result)
 		case "OR":
 			stack = stack[:l-2]
-
-			if str1 == "1" || str2 == "1" {
-				stack = append(stack, "1")
-				continue
-			} else if str1 != "0" && str1 != "1" {
-				return false, fmt.Errorf("expected '0' or '1', actual: %s", str1)
-			} else if str2 != "0" && str2 != "1" {
-				return false, fmt.Errorf("expected '0' or '1', actual: %s", str2)
+			if result, err = or(str1, str2); err != nil {
+				return false, err
 			}
-			stack = append(stack, "0")
+			stack = append(stack, result)
 		case "AND":
 			stack = stack[:l-2]
-
-			if str1 == "1" && str2 == "1" {
-				stack = append(stack, "1")
-				continue
-			} else if str1 != "0" && str1 != "1" {
-				return false, fmt.Errorf("expected '0' or '1', actual: %s", str1)
-			} else if str2 != "0" && str2 != "1" {
-				return false, fmt.Errorf("expected '0' or '1', actual: %s", str2)
+			if result, err = and(str1, str2); err != nil {
+				return false, err
 			}
-			stack = append(stack, "0")
+			stack = append(stack, result)
 		case "<":
 			stack = stack[:l-2]
 			if str1 > str2 {
@@ -102,7 +88,6 @@ func GetBoolResult(postfix []string) (bool, error) {
 				continue
 			}
 			stack = append(stack, "0")
-
 		case ">=":
 			stack = stack[:l-2]
 			if str1 <= str2 {
@@ -110,7 +95,6 @@ func GetBoolResult(postfix []string) (bool, error) {
 				continue
 			}
 			stack = append(stack, "0")
-
 		case "<=":
 			stack = stack[:l-2]
 			if str1 >= str2 {
@@ -118,7 +102,6 @@ func GetBoolResult(postfix []string) (bool, error) {
 				continue
 			}
 			stack = append(stack, "0")
-
 		case "<>", "!=":
 			stack = stack[:l-2]
 			if str1 != str2 {
@@ -135,7 +118,6 @@ func GetBoolResult(postfix []string) (bool, error) {
 			stack = append(stack, "0")
 		default:
 			stack = append(stack, val)
-			//case "*", "DIV", "MOD"
 		}
 	}
 	if stack[0] == "1" {
@@ -144,15 +126,7 @@ func GetBoolResult(postfix []string) (bool, error) {
 	return false, nil
 }
 
-// func (d *Row) GetValue(field string) (string, error) {
-// 	for i, val := range d.Fields {
-// 		if val == field {
-// 			return d.Values[i], nil
-// 		}
-// 	}
-// 	return "", fmt.Errorf("field: %s is not found", field)
-// }
-
+//nolint:goconst
 func InfixToPostfix(infix []string) (postfix []string) {
 	stack := make([]string, 0, len(infix))
 	for _, val := range infix {
@@ -198,6 +172,8 @@ func ReplaceFieldsToValues(lex []string, row *Row) {
 		}
 	}
 }
+
+//nolint:gomnd
 func GetPriority(operator string) uint8 {
 	operator = strings.ToUpper(operator)
 	switch operator {
@@ -339,4 +315,44 @@ func GetFields(row, sep string) []string {
 
 func (h *Head) NewRow() *Row {
 	return &Row{Head: h}
+}
+
+func not(str string) (string, error) {
+	switch str {
+	case "1":
+		return "0", nil
+	case "0":
+		return "1", nil
+	default:
+		return "", fmt.Errorf("syntax error: %s is not bool(expected '0' or '1')", str)
+	}
+}
+
+func or(str1, str2 string) (string, error) {
+	if isBool(str1) && isBool(str2) {
+		if str1 == "1" || str2 == "1" {
+			return "1", nil
+		}
+		return "0", nil
+	}
+	return "", fmt.Errorf("syntax error: %s is not bool(expected '0' or '1')", str2)
+}
+
+func and(str1, str2 string) (string, error) {
+	if isBool(str1) && isBool(str2) {
+		if str1 == "1" && str2 == "1" {
+			return "1", nil
+		}
+		return "0", nil
+	}
+	return "", fmt.Errorf("syntax error: %s is not bool(expected '0' or '1')", str2)
+}
+
+func isBool(str string) bool {
+	switch str {
+	case "1", "0":
+		return true
+	default:
+		return false
+	}
 }

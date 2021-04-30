@@ -139,3 +139,4 @@ run:
     - internal/cache
     - internal/renameio
     - internal/robustio
+  tests: false
