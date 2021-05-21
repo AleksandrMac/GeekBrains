@@ -6,6 +6,7 @@ import (
 	"github.com/AleksandrMac/GeekBrains/Go/Go_level_2/lesson5/task"
 )
 
+//nolint:gomnd
 func main() {
 	fmt.Println("----------Task1-------------")
 	task.Task1()

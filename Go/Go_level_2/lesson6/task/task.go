@@ -1,6 +1,7 @@
 package task
 
 import (
+	"fmt"
 	"os"
 	"runtime"
 	"runtime/trace"
@@ -13,7 +14,11 @@ const num = 1000
 // безопасного доступа к данным из нескольких потоков.
 // Выполните трассировку программы
 func Task1() {
-	trace.Start(os.Stderr)
+	err := trace.Start(os.Stderr)
+	if err != nil {
+		fmt.Println(err.Error())
+		return
+	}
 	defer trace.Stop()
 	var count uint32
 	lock := sync.Mutex{}
@@ -30,7 +35,11 @@ func Task1() {
 // Task2 - Написать многопоточную программу, в которой будет
 // использоваться явный вызов планировщика. Выполните трассировку программы
 func Task2() {
-	trace.Start(os.Stderr)
+	err := trace.Start(os.Stderr)
+	if err != nil {
+		fmt.Println(err.Error())
+		return
+	}
 	defer trace.Stop()
 	var count uint32
 	lock := sync.Mutex{}

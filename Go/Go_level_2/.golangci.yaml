@@ -134,6 +134,7 @@ issues:
       text: "unnecessaryDefer:"
 
 run:
+  concurency: 8
   skip-dirs:
     - test/testdata_etc
     - internal/cache
