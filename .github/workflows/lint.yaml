@@ -10,7 +10,7 @@ jobs:
     runs-on: ubuntu-latest
     defaults:
       run:        
-        working-directory: Go\go_best_practice
+        working-directory: Go/go_best_practice
     steps:
       - uses: actions/checkout@v2
       - name: golangci-lint
