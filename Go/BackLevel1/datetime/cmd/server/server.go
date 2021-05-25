@@ -4,6 +4,7 @@ import (
 	"io"
 	"log"
 	"net"
+	"os"
 	"time"
 )
 
@@ -23,12 +24,22 @@ func main() {
 }
 
 func handleConn(c net.Conn) {
-	defer c.Close()
-	for {
-		_, err := io.WriteString(c, time.Now().Format("15:04:05\n"))
-		if err != nil {
-			return
+	go func() {
+		defer c.Close()
+		for {
+			_, err := io.WriteString(c, time.Now().Format("15:04:05\n"))
+			if err != nil {
+				return
+			}
+			time.Sleep(1 * time.Second)
 		}
-		time.Sleep(1 * time.Second)
-	}
+	}()
+	go func() {
+		// копирование сообщений в открытый канала
+		for {
+			if _, err := io.Copy(c, os.Stdin); err != nil {
+				return
+			}
+		}
+	}()
 }
