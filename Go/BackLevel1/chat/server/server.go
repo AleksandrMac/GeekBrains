@@ -53,9 +53,21 @@ func broadcaster() {
 
 func handleConn(conn net.Conn) {
 	ch := make(chan string)
+
+	// сообщение с просьбой о вводе имени
+	fmt.Fprint(conn, "Please, input your name: ")
+	var (
+		name string
+		err  error
+	)
+	// ждем ввода имени, далее запускаем чат
+	if _, err = fmt.Fscan(conn, &name); err != nil {
+		fmt.Println(err)
+	}
+
 	go clientWriter(conn, ch)
 
-	who := conn.RemoteAddr().String()
+	who := name //conn.RemoteAddr().String()
 	ch <- "You are " + who
 	messages <- who + " has arrived"
 	entering <- ch
