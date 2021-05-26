@@ -14,5 +14,5 @@ jobs:
         uses: golangci/golangci-lint-action@v2
         with:
           version: v1.40
-          working-directory: Go/go_best_practice
+          working-directory: Go/BackLevel1
           # only-new-issues: true
