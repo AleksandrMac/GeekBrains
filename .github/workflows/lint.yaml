@@ -15,3 +15,4 @@ jobs:
         with:
           version: v1.40
           working-directory: Go/BackLevel1
+          only-new-issues: true
