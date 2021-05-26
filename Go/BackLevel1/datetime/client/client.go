@@ -21,6 +21,8 @@ func main() {
 		if err == io.EOF {
 			break
 		}
-		io.WriteString(os.Stdout, fmt.Sprintf("Custom output! %s", string(buf))) // выводим измененное сообщение сервера в консоль
+		if _, err := io.WriteString(os.Stdout, fmt.Sprintf("Custom output! %s", string(buf))); err != nil { // выводим измененное сообщение сервера в консоль
+			log.Fatal(err)
+		}
 	}
 }
