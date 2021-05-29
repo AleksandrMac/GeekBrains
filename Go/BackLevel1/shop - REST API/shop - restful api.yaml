@@ -20,31 +20,40 @@ components:
         id:
           type: integer
           format: int64
+          example: 1
         name:
           type: string
+          example: Avocado
         description:
           type: string
+          example: berry
         price:
           type: integer
           format: int64
+          example: 12345
         image_link:
           type: string
-      example:
-        - id: 1
-          name: Aavocado
-          description: berry
-          price: 12345          
-          image_link: https://cdn-edb.arla.com/globalassets/images/ingredients/avocado.jpg
-        - id: 2
-          name: Aavocado
-          description: berry
-          price: 12345          
-          image_link: https://cdn-edb.arla.com/globalassets/images/ingredients/avocado.jpg
-        - id: 3
-          name: Aavocado
-          description: berry
-          price: 12345          
-          image_link: https://cdn-edb.arla.com/globalassets/images/ingredients/avocado.jpg
+          example: https://cdn-edb.arla.com/globalassets/images/ingredients/avocado.jpg
+    Order:
+      type: object
+      properties:
+        id:
+          type: integer
+          format: int64
+        itemList:
+          type: array
+          items:
+            $ref: "#/components/schemas/Item"
+        createdDate:
+          type: string
+          format: datetime
+        status:
+         type: string
+         description: Order status
+         enum:
+         - placed
+         - approved
+         - deliverd
   securitySchemes:
     api_key:
       type: "apiKey"
@@ -116,7 +125,8 @@ paths:
             application/json:
               schema: 
                 type: array
-                $ref: "#components/schemas/Item"
+                items:
+                  $ref: "#/components/schemas/Item"
         400:
          description: Invalid price range
     post:
@@ -155,25 +165,7 @@ paths:
             application/json:
               schema:
                 type: object
-                properties:
-                  id: 
-                    type: integer
-                    format: int64
-                  name:
-                    type: string
-                  description:
-                    type: string
-                  price:
-                    type: integer
-                    format: int64
-                  image_link:
-                    type: string
-                example:
-                  id: 1
-                  name: Aavocado
-                  description: berry
-                  price: 12345          
-                  image_link: https://cdn-edb.arla.com/globalassets/images/ingredients/avocado.jpg
+                $ref: '#/components/schemas/Item'
         400:
           description: Invalid ID supplied
     put:
@@ -202,7 +194,7 @@ paths:
         405:
           description: Invalid input
       security:
-       - api-key: []
+       - api_key: []
     delete:
       summary: Deletes a item
       operationId: DeleteItem
@@ -221,7 +213,6 @@ paths:
           description: Item not found
       security:
       - api_key: []
-
   /items/upload_image:
     post:
       summary: upload an image
@@ -245,3 +236,91 @@ paths:
           description: Successfully upload file
       security:
       - api_key: []
+  /orders:
+    get:
+      summary:  Get list orders
+      parameters:
+      - name: status
+        in: header
+        required: false
+        schema:
+          type: string
+      operationId: getOrders
+      responses:
+        200:
+          description: Succesful
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Order"
+      security:
+      - api_key: []
+  /orders/{orderId}:
+    get:
+      summary: Gei order with orderId
+      operationId: getOrder
+      parameters:
+        - in: path
+          name: orderId
+          required: true
+          schema:
+            type: string
+      responses:
+        200:
+          description: Succesful
+          content:
+            application/json:
+              schema:
+                type: object
+                $ref: "#/components/schemas/Order"
+      security:
+      - api_key: []
+    put:
+      summary: Updates a order in the store with form data
+      operationId: putOrder
+      parameters:
+      - in: path
+        name: orderId
+        required: true
+        description: ID of order that needs to be updated
+        schema:
+          type: integer
+          format: int64
+      requestBody:
+        content:
+          application/json:
+            schema:
+              properties:
+                item:
+                  type: object
+                  $ref: "#/components/schemas/Item"
+                  description: Updated name of the order
+                status:
+                  type: string
+                  description: Updated status of the order
+      responses:
+        405:
+          description: Invalid input
+      security:
+       - api_key: []
+    delete:
+      summary: Deletes a order
+      operationId: deleteOrder
+      parameters:
+      - name: orderId
+        in: path
+        description: Order id to delete
+        required: true
+        schema:
+          type: integer
+          format: int64
+      responses:
+        400:
+          description: Invalid ID supplied
+        404:
+          description: Order not found
+      security:
+      - api_key: []
+    
