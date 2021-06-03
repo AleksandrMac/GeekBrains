@@ -91,6 +91,10 @@ func dirList(w http.ResponseWriter, r *http.Request, f http.File) {
 	fmt.Fprintf(w, "\t</tr>\n")
 	for i, n := 0, dirs.len(); i < n; i++ {
 		name, ext := splitName(dirs.name(i))
+		queryExtension := r.URL.Query().Get("extension")
+		if "."+queryExtension != ext && queryExtension != "" {
+			continue
+		}
 		size := ""
 		if dirs.isDir(i) {
 			name += ext + "/"
