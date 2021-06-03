@@ -1,6 +1,7 @@
 package main
 
 import (
+	"log"
 	"net/http"
 	"time"
 
@@ -12,13 +13,21 @@ func main() {
 		UploadDir: "../../data",
 	}
 	http.Handle("/upload", uploadHandler)
+
 	dirToServe := http.Dir(uploadHandler.UploadDir)
+	downloadHandler := &DownloadHandler{
+		Root: dirToServe,
+	}
+	http.Handle("/download/", downloadHandler)
 
 	fs := &http.Server{
-		Addr:         ":8080",
-		Handler:      http.FileServer(dirToServe),
+		Addr: ":8080",
+		// Handler:      http.FileServer(dirToServe),
 		ReadTimeout:  10 * time.Second,
 		WriteTimeout: 10 * time.Second,
 	}
-	fs.ListenAndServe()
+	if err := fs.ListenAndServe(); err != nil {
+		log.Panic(err)
+	}
+
 }
